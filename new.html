@@ -257,7 +257,7 @@
             const audioFiles = ['nakku.mp3', 'address.mp3', 'saavu.mp3']; // Replace with your actual audio file paths
             let audio = new Audio();
             let isAudioPlaying = false;
-            let isUsingSpeaker = false; // Flag to track if audio is being played through the speaker
+            let isUsingSpeaker = true; // Flag to track if audio is being played through the speaker
 
             // Function to play a random audio
             function playRandomAudio() {
@@ -327,6 +327,7 @@
             // Wait for user interaction to play audio
             document.body.addEventListener('click', () => {
                 if (!isAudioPlaying) {
+                    playRandomAudio.currentTime = 0;
                     playRandomAudio();
                     setAudioOutputToEarpiece(); // Start by playing through earpiece
                 }
