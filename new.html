@@ -159,7 +159,16 @@
             font-family: 'Pacifico', cursive;
             filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));
         }
-
+        #callEndedText {
+            display: none;
+            font-size: 1.5rem;
+            color: white;
+            margin-top: 10px;
+            font-family: 'Pacifico', cursive;
+            filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));
+            text-align: center;
+       
+        }
     </style>
 </head>
 
@@ -185,7 +194,8 @@
         <!-- Timer Display -->
         <div id="timer">0.00</div> <!-- Timer initially set to 0.00 -->
     </div>
-
+ <!-- Call ended message -->
+ <div id="callEndedText">Call Ended</div>
     <!-- Footer Buttons -->
     <div class="footer-buttons">
         <div class="footer-button" id="speakerButton">
@@ -199,124 +209,133 @@
         </div>
     </div>
 
+  
     <div class="flex flex-col p-4 space-y-4 overflow-y-auto flex-1 no-scrollbar" id="chatContainer" style="font-family: 'Pacifico', cursive;"></div>
     <script>
-        // Timer functionality
-        let timerDisplay = document.getElementById('timer');
-        let timerValue = 0.00;
-        let timerInterval;
-        
-        // Audio setup
-        const audioFiles = ['nakku.mp3', 'address.mp3', 'saavu.mp3']; // Replace with your actual audio file paths
-        let audio = new Audio();
-        let isAudioPlaying = false;
-        let isUsingSpeaker = false; // Flag to track if audio is being played through the speaker
-        
-        // Function to play a random audio
-        function playRandomAudio() {
-            let randomIndex = Math.floor(Math.random() * audioFiles.length);
-            audio.src = audioFiles[randomIndex];
-            audio.play().then(() => {
-                isAudioPlaying = true;
-                console.log('Audio is playing');
-            }).catch(error => {
-                console.error('Audio playback failed', error);
-            });
-        }
-        
-        // Start Timer
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                if (isAudioPlaying) {
-                    timerValue += 0.01;
-                    timerDisplay.textContent = timerValue.toFixed(2);
-                }
-            }, 1000); // Update every 100ms for more precision
-        }
-        
-        // When audio ends, stop the timer and show call ended
-        audio.addEventListener('ended', () => {
-            isAudioPlaying = false;
-            clearInterval(timerInterval);
-            timerDisplay.textContent = "Call Ended";
+        // Function to simulate the active state of the button (on page load)
+        function simulateActiveState(button) {
+            // Add active styles to simulate the click (scaling and background color change)
+            button.style.transform = 'scale(1.2)';
+            button.style.background = 'linear-gradient(135deg, #f84da3dd 0%, hwb(335 67% 0%) 100%)';
+            button.style.transition = 'transform 0.1s ease-in-out';
+
+            // Toggle the icon to simulate an "unmute" state (volume up)
+            const icon = button.querySelector('i');
+            console.log("Toggling icon visibility...");
+            icon.classList.toggle('fa-volume-up'); // Toggle to unmute icon
+            icon.classList.toggle('fa-volume-up'); // Toggle to mute icon
+
+            // Optional: After a short time, remove the active state effect and reset the icon
             setTimeout(() => {
-                window.location.href = 'home.html'; // Redirect after 1 second
-            }, 1000);
-        });
-        
-        // Call end button functionality
-        const callCutButton = document.getElementById('callCutButton');
-        callCutButton.addEventListener('click', () => {
-            clearInterval(timerInterval);  // Stop the timer
-            timerDisplay.textContent = "Call Ended";  // Display "Call Ended"
-            setTimeout(() => {
-                window.location.href = 'home.html';  // Redirect after 1 second
-            }, 1000);
-        });
-        
+                button.style.transform = '';  // Reset scale to original
+                button.style.background = '';  // Reset background
+                // Reset the icon
+                icon.classList.toggle('fa-volume-mute'); // Toggle back to the mute icon
+                icon.classList.toggle('fa-volume-up'); // Toggle back to mute icon
+            }, 500);  // Active state duration (500ms)
+        }
+
         // Speaker button functionality
         const speakerButton = document.getElementById('speakerButton');
-        speakerButton.addEventListener('click', () => {
-            const icon = speakerButton.querySelector('i');
-            icon.classList.toggle('fa-volume-mute'); // Toggle mute icon
-            icon.classList.toggle('fa-volume-up'); // Toggle unmute icon
-            if (audio.paused) {
-                audio.play();  // Resume playing if paused
-            }
-            
-            if (isUsingSpeaker) {
-                // Switch back to earpiece without stopping the audio
-                setAudioOutputToEarpiece();
-                isUsingSpeaker = false;
-            } else {
-                // Switch to speaker without stopping the audio
-                setAudioOutputToSpeaker();
-                isUsingSpeaker = true;
-            }
-        });
-        
-        // Function to switch the audio output to the speaker
-        function setAudioOutputToSpeaker() {
-            navigator.mediaDevices.enumerateDevices()
-                .then(devices => {
-                    const speaker = devices.find(device => device.kind === 'audiooutput' && device.label.toLowerCase().includes('speaker'));
-                    if (speaker && audio.setSinkId) {
-                        audio.setSinkId(speaker.deviceId).then(() => {
-                            console.log("Audio is now routed to the speaker.");
-                        }).catch(err => {
-                            console.error("Failed to set audio output to speaker", err);
-                        });
-                    }
-                });
-        }
-        
-        // Function to switch the audio output to the earpiece
-        function setAudioOutputToEarpiece() {
-            navigator.mediaDevices.enumerateDevices()
-                .then(devices => {
-                    const earpiece = devices.find(device => device.kind === 'audiooutput' && device.label.toLowerCase().includes('earpiece'));
-                    if (earpiece && audio.setSinkId) {
-                        audio.setSinkId(earpiece.deviceId).then(() => {
-                            console.log("Audio is now routed to the earpiece.");
-                        }).catch(err => {
-                            console.error("Failed to set audio output to earpiece", err);
-                        });
-                    }
-                });
-        }
-        
-        // Wait for user interaction to play audio
+        const icon = speakerButton.querySelector('i');
+
+        // Set the initial icon (assuming it should start with muted state)
+        icon.classList.add('fa-volume-mute'); // Add mute icon initially
+        console.log("Initial icon:", icon.classList);
+
         window.onload = () => {
-            startTimer();
-            // Wait for user interaction before playing audio
+            // Simulate active state of the speaker button on page load
+            simulateActiveState(speakerButton);
+
+            // Timer functionality and other setup
+            let timerDisplay = document.getElementById('timer');
+            let callEndedText = document.getElementById('callEndedText');  // Reference to "Call Ended" text element
+            let timerValue = 0.00;
+            let timerInterval;
+
+            // Audio setup
+            const audioFiles = ['nakku.mp3', 'address.mp3', 'saavu.mp3']; // Replace with your actual audio file paths
+            let audio = new Audio();
+            let isAudioPlaying = false;
+            let isUsingSpeaker = false; // Flag to track if audio is being played through the speaker
+
+            // Function to play a random audio
+            function playRandomAudio() {
+                let randomIndex = Math.floor(Math.random() * audioFiles.length);
+                audio.src = audioFiles[randomIndex];
+                audio.play()
+                    .then(() => {
+                        isAudioPlaying = true;
+                        console.log('Audio is playing');
+                    })
+                    .catch(error => {
+                        console.error('Audio playback failed', error);
+                    });
+            }
+
+            // Start Timer - Automatically starts from 0:00 on page load
+            function startTimer() {
+                timerInterval = setInterval(() => {
+                    timerValue += 0.1;  // Increment timer by 0.1s
+                    timerDisplay.textContent = formatTime(timerValue); // Format and display timer
+                }, 300); // Update every 100ms for precision
+            }
+
+            // Stop Timer
+            function stopTimer() {
+                clearInterval(timerInterval);  // Stop the timer
+                console.log("Timer stopped.");
+            }
+
+            // Format time as minutes:seconds
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = Math.floor(seconds % 60);
+                return `${minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
+            }
+
+            // When audio starts playing, begin the timer
+            audio.onplaying = () => {
+                isAudioPlaying = true;
+                startTimer();  // Start the timer when audio starts
+            };
+
+            // When audio ends, stop the timer, hide timer and show "Call Ended"
+            audio.addEventListener('ended', () => {
+                isAudioPlaying = false;
+                stopTimer();  // Stop the timer when audio ends
+                timerDisplay.style.display = 'none';  // Hide the timer display
+                callEndedText.style.display = 'block';  // Show "Call Ended" text
+
+                // After 1 second, redirect to home.html
+                setTimeout(() => {
+                    window.location.href = 'home.html'; // Redirect after 1 second
+                }, 1000);
+            });
+
+            // Call cut button functionality
+            const callCutButton = document.getElementById('callCutButton');
+            callCutButton.addEventListener('click', () => {
+                stopTimer();  // Stop the timer when call is cut
+                timerDisplay.style.display = 'none';  // Hide the timer
+                callEndedText.style.display = 'block';  // Show "Call Ended" text
+                setTimeout(() => {
+                    window.location.href = 'home.html';  // Redirect after 1 second
+                }, 1000);
+            });
+
+            // Wait for user interaction to play audio
             document.body.addEventListener('click', () => {
                 if (!isAudioPlaying) {
                     playRandomAudio();
                     setAudioOutputToEarpiece(); // Start by playing through earpiece
                 }
             });
+
+            // Automatically start the timer on page load, even without audio interaction
+            startTimer();  // This starts the timer immediately when the page is loaded
         };
-        </script>
+    </script>
         
 
 </body>
