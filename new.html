@@ -206,45 +206,15 @@
         let timerDisplay = document.getElementById('timer');
         let timerValue = 0.00;
         let timerInterval;
-
-        // Audio setup
-        const audioFiles = ['nakku.mp3', 'address.mp3', 'saavu.mp3']; // Replace with your actual audio file paths
-        let audio = new Audio();
-        let isAudioPlaying = false;
-
-        // Function to play a random audio
-        function playRandomAudio() {
-            let randomIndex = Math.floor(Math.random() * audioFiles.length);
-            audio.src = audioFiles[randomIndex];
-            audio.play().then(() => {
-                isAudioPlaying = true;
-                console.log('Audio is playing');
-            }).catch(error => {
-                console.error('Audio playback failed', error);
-            });
-        }
-
-        // Start Timer
+        
         function startTimer() {
             timerInterval = setInterval(() => {
-                if (isAudioPlaying) {
-                    timerValue += 0.01;
-                    timerDisplay.textContent = timerValue.toFixed(2);
-                }
-            }, 1000); // Update every 10ms for more precision
+                timerValue += 0.01;
+                timerDisplay.textContent = timerValue.toFixed(2);
+            }, 1000); // Update timer every 10ms for more accuracy
         }
-
-        // When audio ends, stop the timer and show call ended
-        audio.addEventListener('ended', () => {
-            isAudioPlaying = false;
-            clearInterval(timerInterval);
-            timerDisplay.textContent = "Call Ended";
-            setTimeout(() => {
-                window.location.href = 'home.html'; // Redirect after 1 second
-            }, 1000);
-        });
-
-        // Call end button functionality
+    
+        // Call cut button functionality
         const callCutButton = document.getElementById('callCutButton');
         callCutButton.addEventListener('click', () => {
             clearInterval(timerInterval);  // Stop the timer
@@ -253,31 +223,47 @@
                 window.location.href = 'home.html';  // Redirect after 1 second
             }, 1000);
         });
-
+    
         // Speaker button functionality
         const speakerButton = document.getElementById('speakerButton');
         speakerButton.addEventListener('click', () => {
             const icon = speakerButton.querySelector('i');
             icon.classList.toggle('fa-volume-mute'); // Toggle mute icon
             icon.classList.toggle('fa-volume-up'); // Toggle unmute icon
-            if (audio.paused) {
-                audio.play();  // Resume playing if paused
-            } else {
-                audio.pause(); // Pause if playing
-            }
+            icon.classList.toggle('slash'); // Toggle the slash effect
         });
-
-        // Wait for user interaction to play audio
-        window.onload = () => {
-            startTimer();
-            // Wait for user interaction before playing audio
-            document.body.addEventListener('click', () => {
-                if (!isAudioPlaying) {
-                    playRandomAudio();
-                }
+    
+        // Play random audio
+        const audioFiles = [
+            'saavu.mp3', // replace with your audio file paths
+            'address.mp3',
+            'nakku.mp3'
+        ];
+    
+        function playRandomAudio() {
+            // Pick a random audio file
+            const randomIndex = Math.floor(Math.random() * audioFiles.length);
+            const selectedAudio = new Audio(audioFiles[randomIndex]);
+            
+            // Play the selected audio
+            selectedAudio.play();
+    
+            // When audio finishes, stop the timer and display "Call Ended"
+            selectedAudio.addEventListener('ended', () => {
+                clearInterval(timerInterval);  // Stop the timer
+                timerDisplay.textContent = "Call Ended";  // Display "Call Ended"
+                setTimeout(() => {
+                    window.location.href = 'home.html';  // Redirect after 1 second
+                }, 1000);
             });
+        }
+    
+        // Start the timer and play the random audio when the page loads
+        window.onload = function() {
+            startTimer();
+            playRandomAudio(); // Play random audio
         };
     </script>
-
+    
 </body>
 </html>
