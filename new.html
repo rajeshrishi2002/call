@@ -206,7 +206,10 @@
         let timerDisplay = document.getElementById('timer');
         let timerValue = 0.00;
         let timerInterval;
-        
+    
+        // Audio variable to keep track of currently playing audio
+        let currentAudio = null;
+    
         function startTimer() {
             timerInterval = setInterval(() => {
                 timerValue += 0.01;
@@ -217,10 +220,19 @@
         // Call cut button functionality
         const callCutButton = document.getElementById('callCutButton');
         callCutButton.addEventListener('click', () => {
-            clearInterval(timerInterval);  // Stop the timer
-            timerDisplay.textContent = "Call Ended";  // Display "Call Ended"
+            // Stop the timer
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "Call Ended"; // Display "Call Ended"
+            
+            // Stop the currently playing audio if any
+            if (currentAudio) {
+                currentAudio.pause(); // Pause the audio
+                currentAudio.currentTime = 0; // Reset to the start of the audio
+            }
+    
+            // Redirect after a short delay
             setTimeout(() => {
-                window.location.href = 'home.html';  // Redirect after 1 second
+                window.location.href = 'home.html'; // Redirect after 1 second
             }, 1000);
         });
     
@@ -247,7 +259,8 @@
             
             // Play the selected audio
             selectedAudio.play();
-    
+            currentAudio = selectedAudio; // Store the audio instance to control it later
+            
             // When audio finishes, stop the timer and display "Call Ended"
             selectedAudio.addEventListener('ended', () => {
                 clearInterval(timerInterval);  // Stop the timer
@@ -264,6 +277,7 @@
             playRandomAudio(); // Play random audio
         };
     </script>
+    
     
 </body>
 </html>
