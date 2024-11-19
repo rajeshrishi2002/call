@@ -1,0 +1,323 @@
+<html>
+<head>
+    <title>Solluu</title>
+    <link rel="icon" href="logo.png">
+    <link rel="preload" href="b6.jpeg" as="image">
+    <link rel="preload" href="d.gif" as="image">
+    <link rel="preload" href="dpm.gif" as="image">
+    <link rel="preload" href="dp2.jpeg" as="image">
+    <link rel="preload" href="angry.gif" as="image">
+    <link rel="preload" href="bye.gif" as="image">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/4.0.1/wavesurfer.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('b1.jpeg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            position: relative;
+        }
+        .blur-background {
+            filter: blur(2px); 
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .profile-container {
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .profile-pic {
+            width: 96px; 
+            height: 96px; 
+            border: 4px solid #ea0376;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
+        }
+
+        .username {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff; 
+        }
+
+        #profilePicLarge {
+            margin-top: -30px; 
+        }  
+
+        #usernameLarge {
+            background: linear-gradient(to right, #ffffff, #ffffff); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; 
+        } 
+
+        #mindVoiceIcon {
+            position: absolute; 
+            top: -18px; 
+            right: 0px; 
+            z-index: 10; 
+        }
+
+        #footerImage {
+            position: absolute;
+            bottom: 20px; 
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 1; 
+            animation: fadeInFooter 1.5s ease-in forwards; 
+            width: 60px;
+        }
+
+        /* Footer Button Styles */
+        .footer-buttons {
+            position: absolute;
+            bottom: 80px; /* Positioned above rkr.png */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-between;
+            width: 280px;
+            gap: 20px;  /* Adjust space between buttons */
+        }
+
+        .footer-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%, #f84da2 50%, #470020 100%);
+            filter: drop-shadow(0 0 10px rgba(255, 148, 193, 0.945));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* smooth hover transition */
+            cursor: pointer;
+        }
+
+        .footer-button:hover {
+            transform: scale(1.1);  /* Slight scale up on hover */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Add shadow effect on hover */
+        }
+
+        /* Bulging effect when button is clicked */
+        .footer-button:active {
+            transform: scale(1.2);  /* Bulge when clicked */
+            background: linear-gradient(135deg,  #f84da3dd 0%,  hwb(335 67% 0%) 100%);
+
+            transition: transform 0.1s ease-in-out; /* Fast transition for click effect */
+        }
+
+        .footer-button:active {
+            transition: transform o.3s ease-in-out; /* Ensures it returns to original size over 1 second */
+        }
+
+        /* Icon Styles */
+        .footer-button i {
+            font-size: 20px;
+            color: white;
+        }
+
+        .footer-button.slash i {
+            text-decoration: line-through;
+        }
+
+        /* Adjust specific button margins to move them down */
+        #speakerButton, #videoCallButton {
+            margin-top: 80px; /* Adjust this value to move them further down */
+        }
+        #callCutButton {
+            width: 80px; /* Increase the width of the button */
+            height: 80px; /* Increase the height of the button */
+            font-size: 35px; /* Increase the font size of the icon */
+        }
+
+        /* Timer Style */
+        #timer {
+            font-size: 1.5rem;
+            color: white;
+            margin-top: 10px;
+            font-family: 'Pacifico', cursive;
+            filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));
+        }
+
+    </style>
+</head>
+
+<body class="text-white h-screen flex flex-col">
+    <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
+
+    <div class="flex items-center p-0">   
+        <img alt="Profile picture" id="profilePic" src="icon.png" style="margin-top: -25px; width:120px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+        <div class="ml-4 flex-1"></div>
+    </div>
+   
+    <div class="flex flex-col items-center p-0 rounded-lg " style="z-index: 1001;">
+        <div class="relative">
+            <img alt="Profile picture" class="rounded-full w-20 h-20 border-4 border-pink-500 shadow-lg transition-transform duration-300 hover:scale-105" id="profilePicLarge" src="dp2.jpeg" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));" />
+            <span id="onlineButton" class="absolute bottom-12 right-0 w-5 h-5 rounded-full bg-gradient-to-r from-pink-900 to-pink-500 border-2 border-white flex items-center justify-center shadow-lg transition-colors duration-300" id="onlineLarge" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+                <i class="fas fa-heart text-white text-xs" style="margin-top: 1px;"></i>
+            </span>
+            <div id="mindVoiceIcon" class="absolute bottom-12 right-0 w-5 h-5 rounded-full bg-gradient-to-r from-pink-900 to-pink-500 border-2 border-white flex items-center justify-center hidden" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+                <img src="icon.png" alt="Mind Voice Icon" class="w-full h-full" />
+            </div>
+        </div>
+        <h2 class="text-2xl font-bold mt-1 text-white drop-shadow-lg transition-transform duration-300 hover:scale-105" id="usernameLarge" style="font-family: 'Dancing Script', cursive; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945)); z-index: 10;">the_cutie_pie</h2>       
+        <!-- Timer Display -->
+        <div id="timer">0.00</div> <!-- Timer initially set to 0.00 -->
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="footer-buttons">
+        <div class="footer-button" id="speakerButton">
+            <i class="fas fa-volume-mute" style="font-size: 23px;"></i> <!-- Speaker icon with slash initially -->
+        </div>
+        <div class="footer-button" id="callCutButton">
+            <i class="fas fa-phone-slash" style="font-size: 28px;"></i> <!-- Call Cut icon -->
+        </div>
+        <div class="footer-button" id="videoCallButton">
+            <i class="fas fa-video"></i> <!-- Video Call icon -->
+        </div>
+    </div>
+
+    <div class="flex flex-col p-4 space-y-4 overflow-y-auto flex-1 no-scrollbar" id="chatContainer" style="font-family: 'Pacifico', cursive;"></div>
+    <script>
+        // Timer functionality
+        let timerDisplay = document.getElementById('timer');
+        let timerValue = 0.00;
+        let timerInterval;
+        
+        // Audio setup
+        const audioFiles = ['nakku.mp3', 'address.mp3', 'saavu.mp3']; // Replace with your actual audio file paths
+        let audio = new Audio();
+        let isAudioPlaying = false;
+        let isUsingSpeaker = false; // Flag to track if audio is being played through the speaker
+        
+        // Function to play a random audio
+        function playRandomAudio() {
+            let randomIndex = Math.floor(Math.random() * audioFiles.length);
+            audio.src = audioFiles[randomIndex];
+            audio.play().then(() => {
+                isAudioPlaying = true;
+                console.log('Audio is playing');
+            }).catch(error => {
+                console.error('Audio playback failed', error);
+            });
+        }
+        
+        // Start Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (isAudioPlaying) {
+                    timerValue += 0.01;
+                    timerDisplay.textContent = timerValue.toFixed(2);
+                }
+            }, 1000); // Update every 100ms for more precision
+        }
+        
+        // When audio ends, stop the timer and show call ended
+        audio.addEventListener('ended', () => {
+            isAudioPlaying = false;
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "Call Ended";
+            setTimeout(() => {
+                window.location.href = 'home.html'; // Redirect after 1 second
+            }, 1000);
+        });
+        
+        // Call end button functionality
+        const callCutButton = document.getElementById('callCutButton');
+        callCutButton.addEventListener('click', () => {
+            clearInterval(timerInterval);  // Stop the timer
+            timerDisplay.textContent = "Call Ended";  // Display "Call Ended"
+            setTimeout(() => {
+                window.location.href = 'home.html';  // Redirect after 1 second
+            }, 1000);
+        });
+        
+        // Speaker button functionality
+        const speakerButton = document.getElementById('speakerButton');
+        speakerButton.addEventListener('click', () => {
+            const icon = speakerButton.querySelector('i');
+            icon.classList.toggle('fa-volume-mute'); // Toggle mute icon
+            icon.classList.toggle('fa-volume-up'); // Toggle unmute icon
+            if (audio.paused) {
+                audio.play();  // Resume playing if paused
+            }
+            
+            if (isUsingSpeaker) {
+                // Switch back to earpiece without stopping the audio
+                setAudioOutputToEarpiece();
+                isUsingSpeaker = false;
+            } else {
+                // Switch to speaker without stopping the audio
+                setAudioOutputToSpeaker();
+                isUsingSpeaker = true;
+            }
+        });
+        
+        // Function to switch the audio output to the speaker
+        function setAudioOutputToSpeaker() {
+            navigator.mediaDevices.enumerateDevices()
+                .then(devices => {
+                    const speaker = devices.find(device => device.kind === 'audiooutput' && device.label.toLowerCase().includes('speaker'));
+                    if (speaker && audio.setSinkId) {
+                        audio.setSinkId(speaker.deviceId).then(() => {
+                            console.log("Audio is now routed to the speaker.");
+                        }).catch(err => {
+                            console.error("Failed to set audio output to speaker", err);
+                        });
+                    }
+                });
+        }
+        
+        // Function to switch the audio output to the earpiece
+        function setAudioOutputToEarpiece() {
+            navigator.mediaDevices.enumerateDevices()
+                .then(devices => {
+                    const earpiece = devices.find(device => device.kind === 'audiooutput' && device.label.toLowerCase().includes('earpiece'));
+                    if (earpiece && audio.setSinkId) {
+                        audio.setSinkId(earpiece.deviceId).then(() => {
+                            console.log("Audio is now routed to the earpiece.");
+                        }).catch(err => {
+                            console.error("Failed to set audio output to earpiece", err);
+                        });
+                    }
+                });
+        }
+        
+        // Wait for user interaction to play audio
+        window.onload = () => {
+            startTimer();
+            // Wait for user interaction before playing audio
+            document.body.addEventListener('click', () => {
+                if (!isAudioPlaying) {
+                    playRandomAudio();
+                    setAudioOutputToEarpiece(); // Start by playing through earpiece
+                }
+            });
+        };
+        </script>
+        
+
+</body>
+</html>
