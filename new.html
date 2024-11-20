@@ -8,7 +8,6 @@
     <link rel="preload" href="dp2.jpeg" as="image">
     <link rel="preload" href="angry.gif" as="image">
     <link rel="preload" href="bye.gif" as="image">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <meta charset="UTF-8" />
@@ -20,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -91,8 +90,8 @@
         /* Footer Button Styles */
         .footer-buttons {
             position: absolute;
-            bottom: 80px; /* Positioned above rkr.png */
-            left: 50%;
+            bottom: 130px; /* Positioned above rkr.png */
+            left: 25%;
             transform: translateX(-50%);
             display: flex;
             justify-content: space-between;
@@ -101,19 +100,32 @@
         }
 
         .footer-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%, #f84da2 50%, #470020 100%);
-            filter: drop-shadow(0 0 10px rgba(255, 148, 193, 0.945));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* smooth hover transition */
-            cursor: pointer;
-        }
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffcae4 0%, #ff92bf 30%, #f7eaf0 80%, #b8316d 100%);
+    background-size: 400% 400%; /* This makes the gradient large enough to animate */
+    filter: drop-shadow(0 0 10px rgba(255, 148, 193, 0.945));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    animation: gradientAnimation 5s ease infinite; /* Add the animation */
+}
 
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
         .footer-button:hover {
             transform: scale(1.1);  /* Slight scale up on hover */
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Add shadow effect on hover */
@@ -122,8 +134,7 @@
         /* Bulging effect when button is clicked */
         .footer-button:active {
             transform: scale(1.2);  /* Bulge when clicked */
-            background: linear-gradient(135deg,  #f84da3dd 0%,  hwb(335 67% 0%) 100%);
-
+           background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%,  #f84da2 80%, #ffffff 100%);
             transition: transform 0.1s ease-in-out; /* Fast transition for click effect */
         }
 
@@ -131,20 +142,26 @@
             transition: transform o.3s ease-in-out; /* Ensures it returns to original size over 1 second */
         }
 
-        /* Icon Styles */
         .footer-button i {
-            font-size: 20px;
-            color: white;
-        }
+    font-size: 28px; /* Adjust font size for all icons */
+    background: linear-gradient(135deg, #ffb1d3 0%, #f73f9b 30%, #89003e 100%); /* Apply the gradient */
+    -webkit-background-clip: text; /* Make the background clip to the text */
+    background-clip: text; /* Standard way to apply background to text */
+    color: transparent; /* Make the text color transparent to show the gradient */
+    display: inline-block; /* Ensure the icon is treated as a block for background styling */
+    transition: transform 0.2s ease, box-shadow 0.3s ease; /* Optional: add transition effects */
+}
+
+.footer-button i:hover {
+    transform: scale(1.1); /* Slightly scale up the icon on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Optional: add shadow on hover */
+}
 
         .footer-button.slash i {
             text-decoration: line-through;
         }
 
-        /* Adjust specific button margins to move them down */
-        #speakerButton, #videoCallButton {
-            margin-top: 80px; /* Adjust this value to move them further down */
-        }
+
         #callCutButton {
             width: 80px; /* Increase the width of the button */
             height: 80px; /* Increase the height of the button */
@@ -159,13 +176,57 @@
             font-family: 'Pacifico', cursive;
             filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));
         }
+        /* New Button Container Styles */
+        .button-container {
+            position: absolute;
+            top: 50%;
+            left: 56%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 80%;
+            height: 30%;
+            max-width: 900px;
+        }
 
+        .button-container .button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .button-container .button i {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
 <body class="text-white h-screen flex flex-col">
     <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
-
+   <div class="button-container">
+    <div class="footer-button" id="muteButton">
+        <i class="fas fa-volume-mute"></i>
+    </div>
+    <div class="footer-button">
+        <i class="fas fa-keyboard"></i>
+    </div>
+    <div class="footer-button" id="volumeUpButton">
+        <i class="fas fa-volume-up"></i>
+    </div>
+    <div class="footer-button" id="userPlusButton">
+        <i class="fas fa-user-plus"></i>
+    </div>
+    <div class="footer-button" id="videoCallButton">
+        <i class="fas fa-video"></i>
+    </div>
+    <div class="footer-button" id="commentButton">
+        <i class="fas fa-comment"></i>
+    </div>
+</div>
     <div class="flex items-center p-0">   
         <img alt="Profile picture" id="profilePic" src="icon.png" style="margin-top: -25px; width:120px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
         <div class="ml-4 flex-1"></div>
@@ -182,102 +243,112 @@
             </div>
         </div>
         <h2 class="text-2xl font-bold mt-1 text-white drop-shadow-lg transition-transform duration-300 hover:scale-105" id="usernameLarge" style="font-family: 'Dancing Script', cursive; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945)); z-index: 10;">the_cutie_pie</h2>       
-        <!-- Timer Display -->
         <div id="timer">0.00</div> <!-- Timer initially set to 0.00 -->
     </div>
-
-    <!-- Footer Buttons -->
     <div class="footer-buttons">
-        <div class="footer-button" id="speakerButton">
-            <i class="fas fa-volume-mute" style="font-size: 23px;"></i> <!-- Speaker icon with slash initially -->
+        <div id="speakerButton">
         </div>
         <div class="footer-button" id="callCutButton">
-            <i class="fas fa-phone-slash" style="font-size: 28px;"></i> <!-- Call Cut icon -->
-        </div>
-        <div class="footer-button" id="videoCallButton">
-            <i class="fas fa-video"></i> <!-- Video Call icon -->
+            <i class="fas fa-phone-alt" style="font-size: 30px;"></i> 
         </div>
     </div>
 
     <div class="flex flex-col p-4 space-y-4 overflow-y-auto flex-1 no-scrollbar" id="chatContainer" style="font-family: 'Pacifico', cursive;"></div>
-
     <script>
-        // Timer functionality
         let timerDisplay = document.getElementById('timer');
         let timerValue = 0.00;
         let timerInterval;
-    
-        // Audio variable to keep track of currently playing audio
         let currentAudio = null;
-    
+        let isMuted = false;
+        let volumeLevel = 1;  // Audio volume range (0 - 1)
+
         function startTimer() {
             timerInterval = setInterval(() => {
                 timerValue += 0.01;
                 timerDisplay.textContent = timerValue.toFixed(2);
             }, 1000); // Update timer every 10ms for more accuracy
-        }
-    
-        // Call cut button functionality
+        }   
         const callCutButton = document.getElementById('callCutButton');
         callCutButton.addEventListener('click', () => {
             // Stop the timer
             clearInterval(timerInterval);
             timerDisplay.textContent = "Call Ended"; // Display "Call Ended"
-            
-            // Stop the currently playing audio if any
-            if (currentAudio) {
+                        if (currentAudio) {
                 currentAudio.pause(); // Pause the audio
                 currentAudio.currentTime = 0; // Reset to the start of the audio
             }
-    
-            // Redirect after a short delay
-            setTimeout(() => {
+                setTimeout(() => {
                 window.location.href = 'home.html'; // Redirect after 1 second
             }, 1000);
-        });
-    
-        // Speaker button functionality
-        const speakerButton = document.getElementById('speakerButton');
-        speakerButton.addEventListener('click', () => {
-            const icon = speakerButton.querySelector('i');
-            icon.classList.toggle('fa-volume-mute'); // Toggle mute icon
-            icon.classList.toggle('fa-volume-up'); // Toggle unmute icon
-            icon.classList.toggle('slash'); // Toggle the slash effect
-        });
-    
-        // Play random audio
-        const audioFiles = [
+        });    
+            const audioFiles = [
             'saavu.mp3', // replace with your audio file paths
             'address.mp3',
             'nakku.mp3'
-        ];
-    
+        ];   
         function playRandomAudio() {
-            // Pick a random audio file
             const randomIndex = Math.floor(Math.random() * audioFiles.length);
             const selectedAudio = new Audio(audioFiles[randomIndex]);
-            
-            // Play the selected audio
             selectedAudio.play();
             currentAudio = selectedAudio; // Store the audio instance to control it later
-            
-            // When audio finishes, stop the timer and display "Call Ended"
             selectedAudio.addEventListener('ended', () => {
-                clearInterval(timerInterval);  // Stop the timer
-                timerDisplay.textContent = "Call Ended";  // Display "Call Ended"
-                setTimeout(() => {
-                    window.location.href = 'home.html';  // Redirect after 1 second
-                }, 1000);
-            });
-        }
-    
-        // Start the timer and play the random audio when the page loads
+        clearInterval(timerInterval);  // Stop the timer
+        timerDisplay.textContent = "Call Ended";  // Display "Call Ended"     
+       history.pushState(null, null, 'home.html');  // Change the URL in the browser's address bar       
+    });
+} 
         window.onload = function() {
             startTimer();
             playRandomAudio(); // Play random audio
         };
-    </script>
-    
-    
+
+              // Mute or unmute the audio
+              const muteButton = document.getElementById('muteButton');
+        muteButton.addEventListener('click', () => {
+            if (currentAudio) {
+                if (isMuted) {
+                    currentAudio.muted = false;  // Unmute
+                    isMuted = false;
+                } else {
+                    currentAudio.muted = true;  // Mute
+                    isMuted = true;
+                }
+            }
+        });
+         // Increase the volume of the audio
+         const volumeUpButton = document.getElementById('volumeUpButton');
+        volumeUpButton.addEventListener('click', () => {
+            if (currentAudio && volumeLevel < 1) {
+                volumeLevel += 0.1;  // Increase volume by 0.1
+                currentAudio.volume = volumeLevel;
+            }
+        });
+
+        // Change audio when "User Plus" button is clicked
+        const userPlusButton = document.getElementById('userPlusButton');
+        userPlusButton.addEventListener('click', () => {
+            currentAudio.pause();  // Stop current audio
+            currentAudio = new Audio('audio3.mp3');  // New audio
+            currentAudio.volume = volumeLevel;
+            currentAudio.play();
+        });
+
+        // Redirect to VC page (video call)
+        const videoCallButton = document.getElementById('videoCallButton');
+        videoCallButton.addEventListener('click', () => {
+            // Smooth redirection to VC page
+            setTimeout(() => {
+                window.location.href = 'vc.html';
+            }, 500);  // Add a slight delay for smooth transition
+        });
+
+        // Redirect to Home page (comment button)
+        const commentButton = document.getElementById('commentButton');
+        commentButton.addEventListener('click', () => {
+            setTimeout(() => {
+                window.location.href = 'home.html'; // Redirect after 1 second
+            }, 500);
+        });
+    </script>   
 </body>
 </html>
