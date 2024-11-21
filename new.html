@@ -252,142 +252,74 @@
     </div>
 
     <div class="flex flex-col p-4 space-y-4 overflow-y-auto flex-1 no-scrollbar" id="chatContainer" style="font-family: 'Pacifico', cursive;"></div>
-   
     <script>
-let currentAudio = null;
-let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let timerDisplay = document.getElementById('timer');
+        let timerValue = 0.00;
+        let timerInterval;
+        let currentAudio = null;
+        let isMuted = false;
+        let volumeLevel = 1;  // Audio volume range (0 - 1)
 
-function playAudio() {
-    const audioFiles = [
-        'saavu.mp3',
-        'address.mp3',
-        'nakku.mp3'
-    ];   
-
-    const randomIndex = Math.floor(Math.random() * audioFiles.length);
-    const audio = new Audio(audioFiles[randomIndex]);
-    currentAudio = audio;
-
-    audio.play();  // Play the audio on the default audio output (earpiece or speaker)
-
-    // Set up Web Audio API for better control
-    const source = audioContext.createMediaElementSource(audio);
-    const gainNode = audioContext.createGain();
-    source.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    // Try to force audio to the earpiece by setting it to mono (some browsers do this automatically)
-    gainNode.gain.value = 1;
-
-    audio.addEventListener('ended', () => {
-        // Handle end of audio
-        clearInterval(timerInterval);
-        timerDisplay.textContent = "Call Ended";
-    });
-}
-
-// Try to detect the earpiece output
-function switchToSpeaker() {
-    // Currently, there's no reliable way to control whether the audio goes to the earpiece or speaker
-    // without device-specific code or OS-level access.
-    console.log('Switch to speaker (Not fully supported on all browsers)');
-    // The best way to achieve this is to rely on the browser's automatic management or using setSinkId (if supported).
-}
-
-// Mute or unmute
-const muteButton = document.getElementById('muteButton');
-muteButton.addEventListener('click', () => {
-    if (currentAudio) {
-        currentAudio.muted = !currentAudio.muted;
-    }
-});
-
-// Switch audio to speaker when speaker button is clicked
-const speakerButton = document.getElementById('speakerButton');
-speakerButton.addEventListener('click', () => {
-    switchToSpeaker(); // This is where you'd ideally implement logic to force speaker output
-});
-
-// Start the audio when the page loads
-window.onload = function() {
-    playAudio();
-};
-
-    </script>
-     
-   
-   <script>
-let timerDisplay = document.getElementById('timer');
-let timerValue = 0.00;
-
-// Set up the initial audio route (earpiece or speaker)
-function playAudioThroughEarpiece() {
-    const audio = new Audio(audioFiles[0]);  // Pick any audio from the list
-    audio.volume = 0.1;  // Low volume for earpiece
-    audio.play();
-    currentAudio = audio;
-    audio.addEventListener('ended', () => {
-        clearInterval(timerInterval);  // Stop the timer
-        timerDisplay.textContent = "Call Ended";  // Display "Call Ended"     
-        history.pushState(null, null, 'home.html');  // Change the URL
-    });
-}
-
-function switchToSpeaker() {
-    if (currentAudio) {
-        currentAudio.pause(); // Stop the current audio
-        currentAudio.volume = 1;  // Set volume to full for speaker
-        currentAudio.play(); // Play audio again
-    }
-}
-
-function startTimer() {
-    timerInterval = setInterval(() => {
-        timerValue += 0.01;
-        timerDisplay.textContent = timerValue.toFixed(2);
-    }, 1000); // Update timer every 10ms for more accuracy
-}
-
-
-
-const callCutButton = document.getElementById('callCutButton');
-callCutButton.addEventListener('click', () => {
-    // Stop the timer
-    clearInterval(timerInterval);
-    timerDisplay.textContent = "Call Ended"; // Display "Call Ended"
-    if (currentAudio) {
-        currentAudio.pause(); // Pause the audio
-        currentAudio.currentTime = 0; // Reset to the start of the audio
-    }
-    setTimeout(() => {
-        window.location.href = 'home.html'; // Redirect after 1 second
-    }, 1000);
-});    
-
-const audioFiles = [
-    'saavu.mp3', // replace with your audio file paths
-    'address.mp3',
-    'nakku.mp3'
-];   
-
-function playRandomAudio() {
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timerValue += 0.01;
+                timerDisplay.textContent = timerValue.toFixed(2);
+            }, 1000); // Update timer every 10ms for more accuracy
+        }   
+        const callCutButton = document.getElementById('callCutButton');
+        callCutButton.addEventListener('click', () => {
+            // Stop the timer
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "Call Ended"; // Display "Call Ended"
+                        if (currentAudio) {
+                currentAudio.pause(); // Pause the audio
+                currentAudio.currentTime = 0; // Reset to the start of the audio
+            }
+                setTimeout(() => {
+                window.location.href = 'home.html'; // Redirect after 1 second
+            }, 1000);
+        });    
+            const audioFiles = [
+            'saavu.mp3', // replace with your audio file paths
+            'address.mp3',
+            'nakku.mp3'
+        ];   
+        function playRandomAudio() {
     const randomIndex = Math.floor(Math.random() * audioFiles.length);
     const selectedAudio = new Audio(audioFiles[randomIndex]);
     selectedAudio.play();
     currentAudio = selectedAudio; // Store the audio instance to control it later
+
+    // Listen for the end of the audio
     selectedAudio.addEventListener('ended', () => {
+        // When audio ends, stop the timer and change the text
         clearInterval(timerInterval);  // Stop the timer
-        timerDisplay.textContent = "Call Ended";  // Display "Call Ended"     
-        history.pushState(null, null, 'home.html');  // Change the URL in the browser's address bar       
+        timerDisplay.textContent = "Call Ended";  // Display "Call Ended"
+        
+        // Redirect after a short delay (1 second)
+        setTimeout(() => {
+            window.location.href = 'home.html'; // Redirect to home.html after the audio ends
+        }, 700);  // 1000 milliseconds (1 second) delay
     });
-}
+} 
+        window.onload = function() {
+            startTimer();
+            playRandomAudio(); // Play random audio
+        };
 
-window.onload = function() {
-    startTimer();
-    playAudioThroughEarpiece(); // Start playing audio through the earpiece initially
-};
-
-       
+              // Mute or unmute the audio
+              const muteButton = document.getElementById('muteButton');
+        muteButton.addEventListener('click', () => {
+            if (currentAudio) {
+                if (isMuted) {
+                    currentAudio.muted = false;  // Unmute
+                    isMuted = false;
+                } else {
+                    currentAudio.muted = true;  // Mute
+                    isMuted = true;
+                }
+            }
+        });
          // Increase the volume of the audio
          const volumeUpButton = document.getElementById('volumeUpButton');
         volumeUpButton.addEventListener('click', () => {
