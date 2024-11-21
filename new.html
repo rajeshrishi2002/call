@@ -128,7 +128,6 @@
 }
         .footer-button:hover {
             transform: scale(1.1);  /* Slight scale up on hover */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Add shadow effect on hover */
         }
 
         /* Bulging effect when button is clicked */
@@ -149,12 +148,11 @@
     background-clip: text; /* Standard way to apply background to text */
     color: transparent; /* Make the text color transparent to show the gradient */
     display: inline-block; /* Ensure the icon is treated as a block for background styling */
-    transition: transform 0.2s ease, box-shadow 0.3s ease; /* Optional: add transition effects */
+    transition: transform 0.2s ease 
 }
 
 .footer-button i:hover {
     transform: scale(1.1); /* Slightly scale up the icon on hover */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Optional: add shadow on hover */
 }
 
         .footer-button.slash i {
@@ -255,52 +253,87 @@
 
     <div class="flex flex-col p-4 space-y-4 overflow-y-auto flex-1 no-scrollbar" id="chatContainer" style="font-family: 'Pacifico', cursive;"></div>
     <script>
-        let timerDisplay = document.getElementById('timer');
-        let timerValue = 0.00;
-        let timerInterval;
-        let currentAudio = null;
-        let isMuted = false;
-        let volumeLevel = 1;  // Audio volume range (0 - 1)
+let timerDisplay = document.getElementById('timer');
+let timerValue = 0.00;
+let timerInterval;
+let currentAudio = null;
+let isMuted = false;
+let volumeLevel = 1;  // Audio volume range (0 - 1)
+let isUsingSpeaker = false; // Track if audio is using speaker
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timerValue += 0.01;
-                timerDisplay.textContent = timerValue.toFixed(2);
-            }, 1000); // Update timer every 10ms for more accuracy
-        }   
-        const callCutButton = document.getElementById('callCutButton');
-        callCutButton.addEventListener('click', () => {
-            // Stop the timer
-            clearInterval(timerInterval);
-            timerDisplay.textContent = "Call Ended"; // Display "Call Ended"
-                        if (currentAudio) {
-                currentAudio.pause(); // Pause the audio
-                currentAudio.currentTime = 0; // Reset to the start of the audio
-            }
-                setTimeout(() => {
-                window.location.href = 'home.html'; // Redirect after 1 second
-            }, 1000);
-        });    
-            const audioFiles = [
-            'saavu.mp3', // replace with your audio file paths
-            'address.mp3',
-            'nakku.mp3'
-        ];   
-        function playRandomAudio() {
-            const randomIndex = Math.floor(Math.random() * audioFiles.length);
-            const selectedAudio = new Audio(audioFiles[randomIndex]);
-            selectedAudio.play();
-            currentAudio = selectedAudio; // Store the audio instance to control it later
-            selectedAudio.addEventListener('ended', () => {
+// Set up the initial audio route (earpiece or speaker)
+function playAudioThroughEarpiece() {
+    const audio = new Audio(audioFiles[0]);  // Pick any audio from the list
+    audio.volume = 0.1;  // Low volume for earpiece
+    audio.play();
+    currentAudio = audio;
+    audio.addEventListener('ended', () => {
         clearInterval(timerInterval);  // Stop the timer
         timerDisplay.textContent = "Call Ended";  // Display "Call Ended"     
-       history.pushState(null, null, 'home.html');  // Change the URL in the browser's address bar       
+        history.pushState(null, null, 'home.html');  // Change the URL
     });
-} 
-        window.onload = function() {
-            startTimer();
-            playRandomAudio(); // Play random audio
-        };
+}
+
+function switchToSpeaker() {
+    if (currentAudio) {
+        currentAudio.pause(); // Stop the current audio
+        currentAudio.volume = 1;  // Set volume to full for speaker
+        currentAudio.play(); // Play audio again
+    }
+}
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timerValue += 0.01;
+        timerDisplay.textContent = timerValue.toFixed(2);
+    }, 1000); // Update timer every 10ms for more accuracy
+}
+
+// Event listener for the speaker button
+const speakerButton = document.getElementById('speakerButton');
+speakerButton.addEventListener('click', () => {
+    if (!isUsingSpeaker) {
+        switchToSpeaker(); // Switch to speaker
+        isUsingSpeaker = true; // Track speaker usage
+    }
+});
+
+const callCutButton = document.getElementById('callCutButton');
+callCutButton.addEventListener('click', () => {
+    // Stop the timer
+    clearInterval(timerInterval);
+    timerDisplay.textContent = "Call Ended"; // Display "Call Ended"
+    if (currentAudio) {
+        currentAudio.pause(); // Pause the audio
+        currentAudio.currentTime = 0; // Reset to the start of the audio
+    }
+    setTimeout(() => {
+        window.location.href = 'home.html'; // Redirect after 1 second
+    }, 1000);
+});    
+
+const audioFiles = [
+    'saavu.mp3', // replace with your audio file paths
+    'address.mp3',
+    'nakku.mp3'
+];   
+
+function playRandomAudio() {
+    const randomIndex = Math.floor(Math.random() * audioFiles.length);
+    const selectedAudio = new Audio(audioFiles[randomIndex]);
+    selectedAudio.play();
+    currentAudio = selectedAudio; // Store the audio instance to control it later
+    selectedAudio.addEventListener('ended', () => {
+        clearInterval(timerInterval);  // Stop the timer
+        timerDisplay.textContent = "Call Ended";  // Display "Call Ended"     
+        history.pushState(null, null, 'home.html');  // Change the URL in the browser's address bar       
+    });
+}
+
+window.onload = function() {
+    startTimer();
+    playAudioThroughEarpiece(); // Start playing audio through the earpiece initially
+};
 
               // Mute or unmute the audio
               const muteButton = document.getElementById('muteButton');
@@ -327,6 +360,8 @@
         // Change audio when "User Plus" button is clicked
         const userPlusButton = document.getElementById('userPlusButton');
         userPlusButton.addEventListener('click', () => {
+            clearInterval(timerInterval);  // Stop the timer
+            timerDisplay.textContent = "Conference call";  // Display "Call Ended"     
             currentAudio.pause();  // Stop current audio
             currentAudio = new Audio('audio3.mp3');  // New audio
             currentAudio.volume = volumeLevel;
