@@ -207,7 +207,7 @@
     <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
    <div class="button-container">
     <div class="footer-button" id="muteButton">
-        <i class="fas fa-volume-mute"></i>
+        <i class="fas fa-microphone-slash" id="micIcon"></i>
     </div>
     <div class="footer-button">
         <i class="fas fa-keyboard"></i>
@@ -307,19 +307,25 @@
             playRandomAudio(); // Play random audio
         };
 
-              // Mute or unmute the audio
-              const muteButton = document.getElementById('muteButton');
-        muteButton.addEventListener('click', () => {
-            if (currentAudio) {
-                if (isMuted) {
-                    currentAudio.muted = false;  // Unmute
-                    isMuted = false;
-                } else {
-                    currentAudio.muted = true;  // Mute
-                    isMuted = true;
-                }
-            }
-        });
+        const muteButton = document.getElementById('muteButton');
+const micIcon = document.getElementById('micIcon');
+
+muteButton.addEventListener('click', () => {
+    if (currentAudio) {
+        if (isMuted) {
+            currentAudio.muted = false;  // Unmute
+            micIcon.classList.remove('fa-microphone');  // Remove microphone icon
+            micIcon.classList.add('fa-microphone-slash'); // Add microphone-slash icon
+            isMuted = false;
+        } else {
+            currentAudio.muted = true;  // Mute
+            micIcon.classList.remove('fa-microphone-slash');  // Remove microphone-slash icon
+            micIcon.classList.add('fa-microphone'); // Add microphone icon
+            isMuted = true;
+        }
+    }
+});
+
          // Increase the volume of the audio
          const volumeUpButton = document.getElementById('volumeUpButton');
         volumeUpButton.addEventListener('click', () => {
