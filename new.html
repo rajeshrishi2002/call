@@ -213,7 +213,7 @@
         <i class="fas fa-keyboard"></i>
     </div>
     <div class="footer-button" id="volumeUpButton">
-        <i class="fas fa-volume-up"></i>
+        <i class="fas fa-pause"></i>
     </div>
     <div class="footer-button" id="userPlusButton">
         <i class="fas fa-user-plus"></i>
@@ -335,17 +335,32 @@ muteButton.addEventListener('click', () => {
             }
         });
 
-        // Change audio when "User Plus" button is clicked
-        const userPlusButton = document.getElementById('userPlusButton');
+ // "User Plus" button functionality to play a specific audio
+ const userPlusButton = document.getElementById('userPlusButton');
         userPlusButton.addEventListener('click', () => {
             clearInterval(timerInterval);  // Stop the timer
-            timerDisplay.textContent = "Conference call";  // Display "Call Ended"     
-            currentAudio.pause();  // Stop current audio
-            currentAudio = new Audio('address.mp3');  // New audio
+            timerDisplay.textContent = "conference call";  // Display "Conference call" 
+
+            if (currentAudio) {
+                currentAudio.pause();  // Stop current audio
+            }
+
+            // Play the new audio once
+            currentAudio = new Audio('address.mp3');
             currentAudio.volume = volumeLevel;
             currentAudio.play();
-        });
 
+            // When audio finishes, stop the timer and change text to "Call Ended"
+            currentAudio.addEventListener('ended', () => {
+                clearInterval(timerInterval);  // Stop the timer
+                timerDisplay.textContent = "Call Ended";  // Change text to "Call Ended"
+
+                // Redirect after a delay
+                setTimeout(() => {
+                    window.location.href = 'home.html';  // Redirect to home.html
+                }, 1000); // Delay by 1 second
+            });
+        });
         // Redirect to VC page (video call)
         const videoCallButton = document.getElementById('videoCallButton');
         videoCallButton.addEventListener('click', () => {
