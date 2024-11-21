@@ -254,77 +254,65 @@
     <div class="flex flex-col p-4 space-y-4 overflow-y-auto flex-1 no-scrollbar" id="chatContainer" style="font-family: 'Pacifico', cursive;"></div>
    
     <script>
-        let currentAudio = null;
-        let isMuted = false;
-        let volumeLevel = 1;
-    
-        // Function to play the audio
-        function playAudio() {
-            const audioFiles = [
-                'saavu.mp3',
-                'address.mp3',
-                'nakku.mp3'
-            ];   
-    
-            const randomIndex = Math.floor(Math.random() * audioFiles.length);
-            const selectedAudio = new Audio(audioFiles[randomIndex]);
-    
-            // Try to play it on the earpiece by default
-            selectedAudio.play();
-    
-            // Set the currentAudio to handle it later
-            currentAudio = selectedAudio;
-    
-            // After the audio starts playing, try to select an output device (earpiece or speaker)
-            setAudioOutputDevice("earpiece"); // initially, route to earpiece
-    
-            selectedAudio.addEventListener('ended', () => {
-                // Handle end of audio
-                clearInterval(timerInterval);
-                timerDisplay.textContent = "Call Ended";
-            });
-        }
-    
-        // Function to change audio output (to speaker or earpiece)
-        function setAudioOutputDevice(device) {
-            if (currentAudio && currentAudio.setSinkId) {
-                navigator.mediaDevices.enumerateDevices().then(devices => {
-                    let earpiece = null;
-                    let speaker = null;
-    
-                    // Find the earpiece and speaker output devices
-                    devices.forEach(device => {
-                        if (device.kind === "audiooutput") {
-                            if (device.deviceId.includes("earpiece")) {
-                                earpiece = device;
-                            } else if (device.deviceId.includes("speaker")) {
-                                speaker = device;
-                            }
-                        }
-                    });
-    
-                    if (device === "earpiece" && earpiece) {
-                        currentAudio.setSinkId(earpiece.deviceId);
-                    } else if (device === "speaker" && speaker) {
-                        currentAudio.setSinkId(speaker.deviceId);
-                    }
-                }).catch(err => {
-                    console.error("Error accessing media devices: ", err);
-                });
-            }
-        }
-    
-        // Function to handle speaker button click and switch audio to speaker
-        const speakerButton = document.getElementById('speakerButton');
-        speakerButton.addEventListener('click', () => {
-            // Switch audio to speaker when clicked
-            setAudioOutputDevice("speaker");
-        });
-    
-        // Initially play audio when page loads
-        window.onload = function() {
-            playAudio();
-        };
+let currentAudio = null;
+let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+function playAudio() {
+    const audioFiles = [
+        'saavu.mp3',
+        'address.mp3',
+        'nakku.mp3'
+    ];   
+
+    const randomIndex = Math.floor(Math.random() * audioFiles.length);
+    const audio = new Audio(audioFiles[randomIndex]);
+    currentAudio = audio;
+
+    audio.play();  // Play the audio on the default audio output (earpiece or speaker)
+
+    // Set up Web Audio API for better control
+    const source = audioContext.createMediaElementSource(audio);
+    const gainNode = audioContext.createGain();
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // Try to force audio to the earpiece by setting it to mono (some browsers do this automatically)
+    gainNode.gain.value = 1;
+
+    audio.addEventListener('ended', () => {
+        // Handle end of audio
+        clearInterval(timerInterval);
+        timerDisplay.textContent = "Call Ended";
+    });
+}
+
+// Try to detect the earpiece output
+function switchToSpeaker() {
+    // Currently, there's no reliable way to control whether the audio goes to the earpiece or speaker
+    // without device-specific code or OS-level access.
+    console.log('Switch to speaker (Not fully supported on all browsers)');
+    // The best way to achieve this is to rely on the browser's automatic management or using setSinkId (if supported).
+}
+
+// Mute or unmute
+const muteButton = document.getElementById('muteButton');
+muteButton.addEventListener('click', () => {
+    if (currentAudio) {
+        currentAudio.muted = !currentAudio.muted;
+    }
+});
+
+// Switch audio to speaker when speaker button is clicked
+const speakerButton = document.getElementById('speakerButton');
+speakerButton.addEventListener('click', () => {
+    switchToSpeaker(); // This is where you'd ideally implement logic to force speaker output
+});
+
+// Start the audio when the page loads
+window.onload = function() {
+    playAudio();
+};
+
     </script>
      
    
@@ -399,19 +387,7 @@ window.onload = function() {
     playAudioThroughEarpiece(); // Start playing audio through the earpiece initially
 };
 
-              // Mute or unmute the audio
-              const muteButton = document.getElementById('muteButton');
-        muteButton.addEventListener('click', () => {
-            if (currentAudio) {
-                if (isMuted) {
-                    currentAudio.muted = false;  // Unmute
-                    isMuted = false;
-                } else {
-                    currentAudio.muted = true;  // Mute
-                    isMuted = true;
-                }
-            }
-        });
+       
          // Increase the volume of the audio
          const volumeUpButton = document.getElementById('volumeUpButton');
         volumeUpButton.addEventListener('click', () => {
