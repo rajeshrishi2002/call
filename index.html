@@ -67,7 +67,6 @@ body {
         font-family: 'Dancing Script', cursive;
         font-weight: bold;
         z-index: 2;
-        
         transform: translate(-50%, -100%);
         transition: opacity 0.5s;
         animation: pop-in 0.3s ease forwards; /* Keep only the pop-in animation */
@@ -397,6 +396,7 @@ setInterval(() => {
         });
    </script>
 <script>
+
 const messages = ["Truth or Dare"];
 const notificationSound = document.getElementById('notificationSound');
 const truthQuestions = [
@@ -408,9 +408,6 @@ const dareChallenges = [
 const truthAudio = ["audio1.mp3", "audio2.mp3", "audio3.mp3", "audio4.mp3", "audio5.mp3"];
 const dareAudio = ["dare1.mp3", "dare2.mp3", "dare3.mp3", "dare4.mp3", "dare5.mp3"];
 
-let gameChoice = ''; // Store the game choice (truth or dare)
-
-// This function creates the message cloud
 function createMessageCloud() {
     const messageContainer = document.createElement('div');
     messageContainer.className = 'message-cloud';
@@ -446,22 +443,18 @@ function createMessageCloud() {
         if (existingPandrenButton) existingPandrenButton.remove();
         if (existingMaatenButton) existingMaatenButton.remove();
 
-        // If the gameChoice is not set, randomly choose truth or dare
-        if (!gameChoice) {
-            gameChoice = Math.random() < 0.5 ? 'truth' : 'dare';  // Randomly pick truth or dare
-        }
+        const randomChoice = Math.random() < 0.5 ? 'truth' : 'dare'; // Randomly pick truth or dare
+if (randomChoice === 'truth') {
+    const truthIndex = Math.floor(Math.random() * truthQuestions.length);
+    document.getElementById('cardQuestion').innerText = truthQuestions[truthIndex];
+    const truthSound = new Audio(truthAudio[truthIndex]);
+    truthSound.play();
+    messageContainer.innerText = 'Truth';
+    messageContainer.appendChild(arrow);
 
-        if (gameChoice === 'truth') {
-            const truthIndex = Math.floor(Math.random() * truthQuestions.length);
-            document.getElementById('cardQuestion').innerText = truthQuestions[truthIndex];
-            const truthSound = new Audio(truthAudio[truthIndex]);
-            truthSound.play();
-            messageContainer.innerText = 'Truth';
-            messageContainer.appendChild(arrow);
-
-            // Remove any existing truth buttons if they exist
-            const existingButtons = card.querySelectorAll('.truth-button');
-            existingButtons.forEach(button => button.remove());
+    // Remove any existing truth buttons if they exist
+    const existingButtons = card.querySelectorAll('.truth-button');
+    existingButtons.forEach(button => button.remove());
 
     // For Truth, we will show "Ama" and "Illa" buttons
     const amaButton = document.createElement('button');
