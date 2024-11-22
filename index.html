@@ -1,20 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Solluu</title>
-    <link rel="icon" href="logo.png">
     <link rel="preload" href="b1.jpeg" as="image">
     <link rel="preload" href="dp.gif" as="image">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/4.0.1/wavesurfer.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-
     <style>
 body {
   margin: 0;
@@ -25,42 +21,11 @@ body {
   min-height: 100vh;
   position: relative;
   overflow: hidden; /* Prevent content from overflowing */
+  font-family: 'Pacifico', cursive; 
 }
         .blur-background {
             filter: blur(2px); 
         }
-        .video-call-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            display: none; /* Initially hidden */
-        }
-        .video-player {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-        }
-        .user-video-frame {
-            position: absolute;
-            bottom: 530px;
-            right: 15px;
-            width: 48vw;
-            height: auto;
-            border: 4px solid rgb(255, 255, 255);
-            border-radius: 10px;
-            filter: drop-shadow(0 0 10px rgba(255, 148, 193, 0.945)); /* Adjust color and spread */
-            z-index: 10;
-            overflow: hidden;
-        }
-
         .floating-word {
     position: absolute;
     font-size: 20px;
@@ -69,8 +34,9 @@ body {
     pointer-events: none;
     animation: float 2s linear forwards;
     font-family: 'Pacifico', cursive;
-    z-index: 0; /* Ensure they are behind other elements */
-    text-shadow: #fff;
+    z-index: 1; /* Ensure they are behind other elements */
+    text-shadow: drop-shadow(0 0 10px rgba(255, 255, 255, 0.945)); /* Adjust color and spread */
+
 }
         @keyframes float {
             0% { transform: translateY(0); opacity: 1; }
@@ -89,10 +55,11 @@ body {
             width: 190px;
             animation: floatCenter 3s ease-in-out infinite; /* Apply the floating animation */
             filter: drop-shadow(0 0 40px rgba(255, 148, 193, 0.945)); /* Adjust color and spread */
-        }
+        }       
         .message-cloud {
     position: absolute;
- 
+    background-image: url(''); /* Replace with your cloud image */
+    background-size: cover; /* Ensure the image covers the entire cloud */
     background-color: #ffffff;
     border-radius: 15px;
         padding:10px 20px;
@@ -100,13 +67,13 @@ body {
         font-family: 'Dancing Script', cursive;
         font-weight: bold;
         z-index: 2;
+        
         transform: translate(-50%, -100%);
         transition: opacity 0.5s;
         animation: pop-in 0.3s ease forwards; /* Keep only the pop-in animation */
         filter: hue-rotate(25deg); /* Adjust the hue value as needed */
 box-shadow:0 0 40px rgba(255, 148, 193, 0.945);
 }
-
     @keyframes pop-in {
         from {
             transform: translate(-50%, -120%);
@@ -127,10 +94,8 @@ box-shadow:0 0 40px rgba(255, 148, 193, 0.945);
         height: 0;
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
-        border-top: 10px solid rgba(255, 255, 255, 0.9);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border-top: 10px solid rgb(255, 255, 255);
     }
-
     .message-cloud::after {
         content: '';
         position: absolute;
@@ -144,190 +109,241 @@ box-shadow:0 0 40px rgba(255, 148, 193, 0.945);
         filter: drop-shadow(0 0 30px rgba(255, 148, 193, 0.945)); /* Adjust color and spread */
 
     }
-/* Wrapper for the End Call button (GIF) */
-.end-call-wrapper {
-    position: absolute;
-    top: 635px; /* Position it where you want */
-    right: 105px;
-    width: 180px; /* Width of the wrapper, same as the GIF */
-    height: 180px; /* Height of the wrapper */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1001; /* Ensures it appears above the video */
-    filter: drop-shadow(0 0 30px rgba(255, 148, 193, 0.945)); /* Adjust color and spread */
-}
-
-/* White circle behind the GIF */
-.end-call-wrapper::before {
-    content: '';
-    position: absolute;
-    top: 10; /* Position it inside the wrapper */
-    left: 10; /* Position it inside the wrapper */
-    width: 40px; /* Slightly larger than the GIF */
-    height: 49px; /* Slightly larger than the GIF */
-    border-radius: 50%; /* Circle shape */
-    background-color: rgb(255, 255, 255); /* White color for the circle */
-    z-index: -1; /* Places it behind the GIF */
-    filter: drop-shadow(0 0 10px rgba(255, 148, 193, 0.945)); /* Adjust color and spread */
-
-}
-
-  </style>
-   <style>
-    .hidden {
-        display: none;
-    }
-    .disclaimer-point {
-    display: flex; /* Align image and title horizontally */
-    align-items: center; /* Vertically center image and title */
-    margin-bottom: 7px;
-    cursor: pointer;
-}
-.disclaimer-img {
-    width: 30px;
-    height: 30px;
-    margin-right: 3px;
-    margin-left: 22px;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.945)); /* Adjust color and spread */
-}
-
-    .disclaimer-btn {
-        background: none;
-        border: none;
-        color: #ff87c3;
-        cursor: none;
-        text-align: center;
-        font-size: 16px;
-        user-select: none;
-        margin-left: 5px;
-        outline: none;
-        
-
-    }
-    
-    .disclaimer-description{
-        color: #ffffff;
-        font-size: 15px;
-        text-align: center;
-
-    }
-    .button-container {
-display: flex;               /* Use flexbox */
-justify-content: center;     /* Center horizontally */
-margin-top: 20px;            /* Add spacing above the button if needed */
-} 
-    /* Footer Image Styles */
-    #footerImage {
+#footerImage {
     position: absolute;
     bottom: 20px; /* Adjust distance from the bottom as needed */
     left: 50%;
     transform: translateX(-50%); /* Center horizontally */
     opacity: 1; /* Initially hidden */
-    animation: fadeInFooter 1.5s ease-in forwards; /* Fade-in effect */
     width: 60px;
 }
+.hidden {
+            display: none;
+        }
+        .disclaimer-point {
+        display: flex; /* Align image and title horizontally */
+        align-items: center; /* Vertically center image and title */
+        margin-bottom: 7px;
+        cursor: pointer;
+    }
+    .disclaimer-img {
+        width: 30px;
+        height: 30px;
+        margin-right: 3px;
+        margin-left: 22px;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.945)); /* Adjust color and spread */
+    }  .disclaimer-btn {
+            background: none;
+            border: none;
+            color: #ff87c3;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            user-select: none;
+            margin-left: 5px;
+        }   .disclaimer-description{
+            color: #ffffff;
+            font-size: 15px;
+            text-align: center;
 
+        }  .button-container {
+    display: flex;              
+    justify-content: center;    
+    margin-top: 20px;     
+} 
+
+#truthDareCard {
+    position: fixed;
+    top: 51%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(10deg);
+    width: 80%;
+    z-index: 1000;
+    max-width: 500px;
+    padding: 20px;
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgb(255, 165, 203);
+    background: linear-gradient(135deg, #ffcae4 0%, #ff92bf 30%, #f7eaf0 80%, #b8316d 100%);
+    display: none;
+    animation: slideIn 0.5s forwards, rotateCard 0.5s forwards;
+    text-align: center;
+}
+#backgroundImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('bg2.gif');
+    background-size: cover;
+    background-position: center;
+    filter: hue-rotate(20deg); /* Apply hue rotation only to the image */
+    z-index: -1; /* Ensure it's behind the content */
+}
+#content {
+    top: 10px;
+    position: relative;
+    z-index: 1; /* Ensure it's above the background image */
+}
+        @keyframes slideIn {
+            0% {
+                transform: translate(100%, -50%) rotate(10deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+        }
+
+        @keyframes rotateCard {
+            0% { transform: translate(-50%, -50%) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) rotate(0deg); }
+        }#dpGif {
+    width: 70px; /* Adjust the size of the DP GIF */
+    height: auto;
+    z-index: 3;
+    position: absolute;
+    top: -40px; /* Position it above the card */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    margin-bottom: -10%; /* 10% of the bottom of the DP should be inside the card */
+    filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));
+}        .truth-button, .dare-button {
+            background: linear-gradient(135deg, #ffbad7 0%, #f13191 80%);
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            font-size: 18px;
+            padding: 12px 25px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        .truth-button:hover, .dare-button:hover {
+            background: linear-gradient(135deg, #f13191 0%, #ffbad7 80%);
+            transform: scale(1.1);
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .truth-button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffbad7 0%, #f13191 80%);
+            border-radius: 10px;
+        }
+        .dare-button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffbad7 0%, #f13191 80%);
+            border-radius: 10px;
+        }
 </style>
 </head>
 <body class="text-white h-screen flex flex-col" id="messageInput" >
     <img id="footerImage" src="rkr.png" alt="Footer Image" style=" filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
     <div id="floatingWords" class="absolute inset-0 pointer-events-none"></div>
-    <div class="flex items-center p-0" >
-        <a href="home.html"  style=" z-index: 1001">
-        <img alt="Profile picture" id="profilePic" src="icon.png" style="margin-top: -25px; width:120px;filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));"></a>
+    <div class="flex items-center p-0">
+        <img alt="Profile picture" id="profilePic" src="icon.png" style="margin-top: -25px; width:120px;filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
         <div class="ml-4 flex-1"></div>
         <div class="flex space-x-4">
-            <i id="infoIcon" class="fas fa-exclamation-circle fa-light text-white cursor-pointer" 
-            style="font-size: 24px; cursor: none; margin-bottom: 30px; margin-right: 10px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));"></i>
-                 </div>
-    </div>
-    <img id="centerGif" src="dp.gif" alt="Center GIF" />
-    <div id="infoModal" class="fixed inset-0 flex items-center justify-center  hidden" style="z-index: 1000;  overflow-y: auto;">
-        <div class="bg-white text-black p-6 rounded-lg shadow-lg max-w-sm" style="background: linear-gradient(135deg, #ffb1d3 0%, #e01279 30%, #82003a 80%, #e01279 100%)">
-            
-            <img src="disclaimer.png" style="width: 280px; display: block; margin: 0 auto;filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945)); margin-bottom: -20px; margin-top: -30px;">
-
-              <!-- Disclaimer Points with Images and Text -->
-              <div id="disclaimerPoints" class="mt-2" style="font-family: 'Pacifico', cursive;">
-                <!-- Point 1: Video Call Feature -->
-                <div class="disclaimer-point" id="point1">
-                    <img src="point.png" alt="Video Call" class="disclaimer-img">
-                    <span class="disclaimer-btn">Video Call Feature</span>
-                </div>
-                <p class="disclaimer-description hidden" id="desc1">
-                This platform has a video call option where your camera will be activated. It's completely safe & just for fun!</p>                   
-            
-                <!-- Point 2: Fun Background Videos -->
-                <div class="disclaimer-point" id="point2">
-                    <img src="point.png" alt="Fun Videos" class="disclaimer-img">
-                    <span class="disclaimer-btn">Fun Background Videos</span>
-                </div>
-                <p class="disclaimer-description hidden" id="desc2">
-                    When you initiate the video call, a video will play in the background to make the experience more fun.
-                </p> 
-            
-                <!-- Point 3: Use of Famous Reels Videos -->
-                <div class="disclaimer-point" id="point3">
-                    <img src="point.png" alt="Famous Reels" class="disclaimer-img">
-                    <span class="disclaimer-btn">Use of Famous Reels Videos</span>
-                </div>
-                <p class="disclaimer-description hidden" id="desc3">
-                 Content used purely for fun & entertainment only. There is no intent to offend or disrespect anyone or their fans.
-                </p>
-            
-                <!-- Point 4: Entertainment and Humor Only -->
-                <div class="disclaimer-point" id="point4">
-                    <img src="point.png" alt="Entertainment Only" class="disclaimer-img">
-                    <span class="disclaimer-btn">Entertainment & Humor Only</span>
-                </div>
-                <p class="disclaimer-description hidden" id="desc4">
-                    The videos & interactions are meant solely for entertainment. If at any point you feel uncomfortable, you can exit the experience at any time. The aim is to make you laugh & have fun, nothing more.
-                </p>            
-            </div>
-            
-          
- <!-- Center the button using flexbox -->
- <div class="button-container">
-    <button id="closeModal" class="mt-2 px-5 py-2 bg-gray-300 rounded" style="background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%, #f13191 80%); color: #fff; border-radius: 10px;  font-family: 'Pacifico', cursive;">Mmm</button>
-</div> 
+            <i id="infoIcon" class="fas fa-exclamation-circle text-white cursor-pointer" style="font-size: 24px; margin-bottom: 30px; margin-right: 10px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));"></i>
         </div>
     </div>
+    <img id="centerGif" src="dp.gif" alt="Center GIF" >
+          <div id="truthDareCard">
+            <div id="backgroundImage"></div>
+                           <div id="dpGif"> 
+                        <img alt="Profile picture" class="rounded-full" src="dp2.jpeg" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));" />
+                    <span id="onlineButton" class="absolute bottom-12 right-0 w-5 h-5 rounded-full bg-gradient-to-r from-pink-900 to-pink-500 border-2 border-white flex items-center justify-center shadow-lg transition-colors duration-300" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+                        <i class="fas fa-heart text-white text-xs" style="margin-top: 1px;"></i>
+                    </span>
+                    <div id="mindVoiceIcon" class="absolute bottom-12 right-0 w-5 h-5 rounded-full bg-gradient-to-r from-pink-900 to-pink-500 border-2 border-white flex items-center justify-center hidden" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+                        <img src="icon.png" alt="Mind Voice Icon" class="w-full h-full" />
+                    </div>
+                </div>
+                <div id="content">
+                <p id="cardQuestion">This is a sample truth question.</p>
+                </div>
+                <div class="button-container">
+                    <button id="maatenBtn" class="truth-button">Maaten</button>
+                    <button id="pandrenBtn" class="dare-button">Pandren</button>
+                </div>
+            </div>
+        </div>       
+    <div id="infoModal" class="fixed inset-0 flex items-center justify-center  hidden" style="z-index: 1000;  overflow-y: auto;">
+        <div class="bg-white text-black p-6 rounded-lg shadow-lg max-w-sm" style="background: linear-gradient(135deg, #ffb1d3 0%, #e01279 30%, #82003a 80%, #e01279 100%)">           
+            <img src="disclaimer.png" style="width: 280px; display: block; margin: 0 auto;filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945)); margin-bottom: -20px; margin-top: -30px;">
+        <div id="disclaimerPoints" class="mt-2" style="margin-bottom: 30px; font-family: 'Pacifico', cursive;">
+            <div class="disclaimer-point" id="point1">
+                <img src="point.png" alt="For Fun" class="disclaimer-img">
+                <span class="disclaimer-btn">No Intent to Offend or Harm</span>
+                </div>
+                <p class="disclaimer-description hidden" id="desc1">
+                    It aims to provide a fun & friendly convo, using compliments & light-hearted roasting, all with positive intentions.</p>                   
+                    <div class="disclaimer-point" id="point2">
+                    <img src="point.png" alt="For Fun" class="disclaimer-img">
+                    <span class="disclaimer-btn">Replying Character</span>
+                    </div>
+                    <p class="disclaimer-description hidden" id="desc2">
+                     It portrays a girl character, which is intended to be playful & humorous.It is not meant to disrespect or offend any girl or woman.</p>                  
+                     <div class="disclaimer-point" id="point3">
+                        <img src="point.png" alt="For Fun" class="disclaimer-img">
+                        <span class="disclaimer-btn">Mindvoice Response</span>
+                        </div>
+                        <p class="disclaimer-description hidden" id="desc3">
+                            Some responses from her include audio to make interactions more engaging. Only designed to make your experience more lively & fun.</p>
+                       <div class="disclaimer-point" id="point4">
+                          <img src="point.png" alt="For Fun" class="disclaimer-img">
+                          <span class="disclaimer-btn">User Discretion Advised</span>
+                         </div>
+                         <p class="disclaimer-description hidden" id="desc4">
+                            I understand that humor is subjective. If at any point you feel uncomfortable with any interaction, you can choose to exit the App.</p>            
+                        </div>
+ <div class="button-container">
+    <button id="closeModal" class="mt-2 px-5 py-2 bg-gray-300 rounded" style="background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%, #f13191 80%); color: #fff; border-radius: 10px;  font-family: 'Pacifico', cursive;">Mmm</button>
+</div>        </div>
+    </div>
+    <script>
+        document.getElementById('point1').addEventListener('click', function() {
+            document.getElementById('desc1').classList.toggle('hidden');
+        });   document.getElementById('point2').addEventListener('click', function() {
+            document.getElementById('desc2').classList.toggle('hidden');
+        });  document.getElementById('point3').addEventListener('click', function() {
+            document.getElementById('desc3').classList.toggle('hidden');
+        }); document.getElementById('point4').addEventListener('click', function() {
+            document.getElementById('desc4').classList.toggle('hidden');
+        });document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('infoModal').classList.add('hidden');
+            document.querySelectorAll('.disclaimer-description').forEach(function(description) {
+            description.classList.add('hidden');
+    });
+});
+    </script> 
     <div class="flex flex-col items-center p-0 rounded-lg "></div>
     <div class="flex flex-col p-4 space-y-4 overflow-y-auto flex-1 no-scrollbar" id="chatContainer" style="font-family: 'Pacifico', cursive;"></div>
     <div class="flex items-center p-2"></div>
     <audio id="notificationSound" src="msg.mp3" preload="auto"></audio>
-       
-        
-    </div>
-
-
-<script>
-
-        document.getElementById('centerGif').addEventListener('click', function () {
-    // Stop the notification sound if it's playing
-    notificationSound.pause();
-    notificationSound.currentTime = 0;
-});
-
-
-        
-        document.getElementById('infoIcon').onclick = function() {
-            document.getElementById('infoModal').classList.toggle('hidden');
-        }
-
-        document.getElementById('closeInfoModal').onclick = function() {
-            document.getElementById('infoModal').classList.add('hidden');
-        }
-    // Ensure background video volume is set to desired level
-    backgroundVideo.volume = 1.0; // Set volume to max or adjust as needed
-    
-      </script>
-      <script>
-        document.getElementById('centerGif').addEventListener('click', function() {
-          
-        });
-
+    <script>
         const words = [
     "Hi", "Hello", "Saptiya", "Enna pandra", "love you", "Cute",
     "Poo di", "Poo da", "Number", "Okay", "Mmmm",
@@ -336,37 +352,22 @@ margin-top: 20px;            /* Add spacing above the button if needed */
     "Blocked", "clg", "name", "sweet", "ayyo", "poolama", "Wait", "enna sapta", "Chlm", "love", "Solluu", "Offline", "Bye", "Solluu"
 ];
 const floatingWordsContainer = document.getElementById('floatingWords');
-
 function createFloatingWord(word) {
     const span = document.createElement('span');
     span.innerText = word;
     span.className = 'floating-word';
-
-    // Start position at the center of the screen
     const startX = window.innerWidth / 2;
     const startY = window.innerHeight / 2;
-
-    // Randomly set the angle (in radians) for direction
     const angle = Math.random() * 2 * Math.PI;
     const distance = Math.random() * 600 + 100; // Adjusted distance
-
-    // Calculate the end position based on angle and distance
     let endX = startX + distance * Math.cos(angle);
     let endY = startY + distance * Math.sin(angle);
-
-    // Ensure the end positions stay within the window boundaries
     endX = Math.max(0, Math.min(endX, window.innerWidth - 50));  // Subtract 50 to keep the word fully visible
     endY = Math.max(0, Math.min(endY, window.innerHeight - 50));  // Subtract 50 to keep the word fully visible
-
-    // Set initial styles
     span.style.left = `${startX}px`;
     span.style.top = `${startY}px`;
     span.style.opacity = '1';
-
-    // Append the span to the container
     floatingWordsContainer.appendChild(span);
-
-    // Set the animation for movement
     span.animate([{
         transform: `translate(0, 0)`
     }, {
@@ -377,114 +378,228 @@ function createFloatingWord(word) {
         easing: 'linear',
         fill: 'forwards'
     });
-
-    // Remove the word after the animation ends
     setTimeout(() => {
         span.remove();
     }, 2000);
 }
-
-// Create floating words at intervals
 setInterval(() => {
     const word = words[Math.floor(Math.random() * words.length)];
     createFloatingWord(word);
 }, 700); // Adjusted interval to 1 second
     </script>
-        <script>
-            // Toggle description visibility when a disclaimer point is clicked
-            document.getElementById('point1').addEventListener('click', function() {
-                document.getElementById('desc1').classList.toggle('hidden');
-            });
-            document.getElementById('point2').addEventListener('click', function() {
-                document.getElementById('desc2').classList.toggle('hidden');
-            });
-            document.getElementById('point3').addEventListener('click', function() {
-                document.getElementById('desc3').classList.toggle('hidden');
-            });
-            document.getElementById('point4').addEventListener('click', function() {
-                document.getElementById('desc4').classList.toggle('hidden');
-            });
-    
-        
-           // Reset the modal and close it when the "OK" button is clicked
-    document.getElementById('closeModal').addEventListener('click', function() {
-        // Hide the modal
-        document.getElementById('infoModal').classList.add('hidden');
-    
-        // Reset all descriptions to hidden state
-        document.querySelectorAll('.disclaimer-description').forEach(function(description) {
-            description.classList.add('hidden');
-        });
-    });
-    
-        </script>
-        
     <script>
-const messages = [
-    "Attend pannu♡︎",
-    "Hello🥰♡︎",
-    "Hello sollu🥰♡︎",
-    "Call edu♡︎"
-    
+        document.getElementById('infoIcon').addEventListener('click', function () {
+            document.getElementById('infoModal').classList.remove('hidden'); // Show modal
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function () {
+            document.getElementById('infoModal').classList.add('hidden'); // Hide modal
+        });
+   </script>
+<script>
+const messages = ["Truth or Dare"];
+const notificationSound = document.getElementById('notificationSound');
+const truthQuestions = [
+    "What is your biggest fear?",
 ];
+const dareChallenges = [
+    "Dance like no one is watching!",
+];
+const truthAudio = ["audio1.mp3", "audio2.mp3", "audio3.mp3", "audio4.mp3", "audio5.mp3"];
+const dareAudio = ["dare1.mp3", "dare2.mp3", "dare3.mp3", "dare4.mp3", "dare5.mp3"];
 
+let gameChoice = ''; // Store the game choice (truth or dare)
 
-let showMessageClouds = true; // Flag to control message clouds
-
-document.getElementById('centerGif').addEventListener('click', function() {
-    showMessageClouds = false; // Stop showing message clouds
-    window.location.href = 'new.html'; // Navigate to home.html
-
-    // Stop the notification sound if it's playing
-    notificationSound.pause();
-    notificationSound.currentTime = 0; // Reset sound to start
-});
-
+// This function creates the message cloud
 function createMessageCloud() {
-    if (!showMessageClouds) return; // Prevent creating clouds if flag is false
-
     const messageContainer = document.createElement('div');
     messageContainer.className = 'message-cloud';
     messageContainer.innerText = messages[Math.floor(Math.random() * messages.length)];
-
-    // Play notification sound
     notificationSound.currentTime = 0; // Reset sound to start
     notificationSound.play().catch(error => {
         console.error('Error playing sound:', error);
     });
 
-    // Position the message cloud above the center GIF
     const centerGif = document.getElementById('centerGif');
     const rect = centerGif.getBoundingClientRect();
-
-    // Positioning the cloud
     messageContainer.style.left = `${rect.left + rect.width / 2}px`;
     messageContainer.style.top = `${rect.top}px`;
 
     const arrow = document.createElement('div');
     arrow.className = 'arrow';
-
-    // Append arrow and message to the document
-    document.body.appendChild(messageContainer);
     messageContainer.appendChild(arrow);
+    document.body.appendChild(messageContainer);
 
-    // Remove the message cloud after 3 seconds
-    setTimeout(() => {
-        messageContainer.style.opacity = '0';
-        setTimeout(() => {
-            messageContainer.remove();
-        }, 500); // Wait for fade-out transition
-    }, 3000); // Show message for 3 seconds
+    // Initially, allow clicks on the cloud
+    messageContainer.style.pointerEvents = 'auto';  // Ensure clicking is allowed initially
+
+    messageContainer.addEventListener('click', () => {
+        const card = document.getElementById('truthDareCard');
+        card.style.display = 'block';
+        centerGif.style.display = 'none'; // Hide the center GIF
+        const floatingWords = document.getElementById('floatingWords');
+        floatingWords.style.display = 'none'; // Hide the floating words
+
+        // Remove any existing buttons before adding new ones
+        const existingPandrenButton = document.querySelector('.truth-button');
+        const existingMaatenButton = document.querySelector('.dare-button');
+        if (existingPandrenButton) existingPandrenButton.remove();
+        if (existingMaatenButton) existingMaatenButton.remove();
+
+        // If the gameChoice is not set, randomly choose truth or dare
+        if (!gameChoice) {
+            gameChoice = Math.random() < 0.5 ? 'truth' : 'dare';  // Randomly pick truth or dare
+        }
+
+        if (gameChoice === 'truth') {
+            const truthIndex = Math.floor(Math.random() * truthQuestions.length);
+            document.getElementById('cardQuestion').innerText = truthQuestions[truthIndex];
+            const truthSound = new Audio(truthAudio[truthIndex]);
+            truthSound.play();
+            messageContainer.innerText = 'Truth';
+            messageContainer.appendChild(arrow);
+
+            // Remove any existing truth buttons if they exist
+            const existingButtons = card.querySelectorAll('.truth-button');
+            existingButtons.forEach(button => button.remove());
+
+    // For Truth, we will show "Ama" and "Illa" buttons
+    const amaButton = document.createElement('button');
+    amaButton.innerText = 'Ama';
+    amaButton.classList.add('truth-button'); // Add a class to identify this button
+    const illaButton = document.createElement('button');
+    illaButton.innerText = 'Illa';
+    illaButton.classList.add('truth-button'); // Add a class to identify this button
+
+    card.appendChild(amaButton);
+    card.appendChild(illaButton);
+
+    // Function to disable both buttons once one is clicked
+    const disableButtons = () => {
+        amaButton.disabled = true;
+        illaButton.disabled = true;
+    };
+
+    // If Ama is clicked
+    amaButton.addEventListener('click', () => {
+        // Change message and play an audio
+        messageContainer.innerText = 'Ok Ok';
+        messageContainer.appendChild(arrow);
+
+        const amaAudio = new Audio('address.mp3');  // Use your desired audio file
+        amaAudio.play();
+        amaAudio.onended = () => {
+            // After audio ends, reset and hide the card
+            setTimeout(() => {
+                card.style.display = 'none';
+                centerGif.style.display = 'block';
+                floatingWords.style.display = 'block';
+                createMessageCloud(); // Recreate the message cloud
+                messageContainer.classList.add('hidden');
+            }, 1000); // Delay to ensure everything finishes playing
+        };
+        
+        // Disable the other button after one is clicked
+        disableButtons();
+    });
+
+    // If Illa is clicked
+    illaButton.addEventListener('click', () => {
+        // Change message and play an audio
+        messageContainer.innerText = 'Paavam';
+        messageContainer.appendChild(arrow);
+
+        const illaAudio = new Audio('saavu.mp3');  // Use your desired audio file
+        illaAudio.play();
+        illaAudio.onended = () => {
+            // After audio ends, reset and hide the card
+            setTimeout(() => {
+                card.style.display = 'none';
+                centerGif.style.display = 'block';
+                floatingWords.style.display = 'block';
+                createMessageCloud(); // Recreate the message cloud
+                messageContainer.classList.add('hidden');
+            }, 1000); // Delay to ensure everything finishes playing
+        };
+
+        // Disable the other button after one is clicked
+        disableButtons();
+    });
+
 }
+ else {
+            // Your existing Dare logic remains here (unchanged)
+            const dareIndex = Math.floor(Math.random() * dareChallenges.length);
+            document.getElementById('cardQuestion').innerText = dareChallenges[dareIndex];
+            const dareSound = new Audio(dareAudio[dareIndex]);
+            dareSound.play();
+            messageContainer.appendChild(arrow);
 
+            // For Dare, add the buttons
+            const pandrenButton = document.createElement('button');
+            pandrenButton.innerText = 'Pandren';
+            pandrenButton.classList.add('truth-button'); // Add a class to identify this button
+            const maatenButton = document.createElement('button');
+            maatenButton.innerText = 'Maaten';
+            maatenButton.classList.add('dare-button'); // Add a class to identify this button
+
+            card.appendChild(pandrenButton);
+            card.appendChild(maatenButton);
+
+            let maatenClickCount = 0;
+            maatenButton.addEventListener('click', () => {
+                if (maatenClickCount === 0) {
+                    document.getElementById('cardQuestion')
+                    messageContainer.innerText = 'Enakaga pannamaatiya';
+                    maatenClickCount++;
+                    messageContainer.appendChild(arrow);
+
+                } else if (maatenClickCount === 1) {
+                    document.getElementById('cardQuestion')
+                    messageContainer.innerText = 'Mairu pandra';
+                    const mairuAudio = new Audio('mairu_pandra_audio.mp3');
+                    mairuAudio.play();
+                    maatenButton.style.display = 'none';
+                    pandrenButton.style.display = 'block';
+                    messageContainer.appendChild(arrow);
+
+                }
+            });
+
+            pandrenButton.addEventListener('click', () => {
+                messageContainer.innerText = 'Good Boy';
+                messageContainer.appendChild(arrow);
+
+                setTimeout(() => {
+                    card.style.display = 'none';
+                    centerGif.style.display = 'block';
+                    floatingWords.style.display = 'block';
+                    createMessageCloud(); // Recreate the message cloud
+                    messageContainer.classList.add('hidden');
+                    pandrenButton.style.display = 'none';
+                }, 1000);
+            });
+        }
+
+        // Disable further clicks on the message cloud after the card is shown
+        messageContainer.style.pointerEvents = 'none';  // Disable clicking after card shows
+    });
+}
 
 setTimeout(() => {
     createMessageCloud();
-    // Then set an interval for subsequent clouds
-    setInterval(createMessageCloud, 4000);
-}, 1500);
+}, 1400);
 
-    </script>
 
+document.getElementById('closeCardBtn').addEventListener('click', () => {
+    const card = document.getElementById('truthDareCard');
+    card.style.display = 'none';
+    const centerGif = document.getElementById('centerGif');
+    centerGif.style.display = 'block';
+    const floatingWords = document.getElementById('floatingWords');
+    floatingWords.style.display = 'block';
+});
+
+</script>
 </body>
 </html>
