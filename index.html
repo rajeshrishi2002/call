@@ -12,7 +12,6 @@
 <body>
     <div id="results">
       <div class="content">
-        <p>To reset the game press R</p>
       </div>
     </div>
     <div id="score">00</div>
@@ -50,7 +49,7 @@ body:hover #instructions {
   justify-content: center;
   height: 100%;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.578);
 }
 
 a:visited {
@@ -76,13 +75,15 @@ a:visited {
 
 #score {
   position: absolute;
-  color: white;
+  color: rgb(231, 39, 132);
   font-size: 4em;
   font-weight: bold;
   top: 100px;
   text-align: center;
   left: 35%;
   font-family: 'Press Start 2P', cursive; /* Apply the block-like font */
+  filter: drop-shadow(0 0 14px rgb(231, 39, 132)); 
+
 }
 #restart-button {
     background: none;
@@ -93,11 +94,13 @@ a:visited {
     text-align: center;
     font-size: 16px;
     margin-top: 400px;
-    left: 30%;
+    left: 40%;
     padding: 10px 20px;
     background: linear-gradient(135deg, #ffbad7 0%, #e50776 80%);
     border-radius: 10px;
     transition: all 0.3s ease;
+    filter: drop-shadow(0 0 14px rgb(231, 39, 132)); 
+
 }
 
 #restart-button:hover {
