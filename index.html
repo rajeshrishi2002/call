@@ -23,9 +23,9 @@
 </div>
 </body>
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
 
-    body {
+body {
   margin: 0;
   color: white;
   cursor: pointer;
@@ -38,9 +38,36 @@
   -moz-user-select: none;     /* Disable text selection on Firefox */
   -ms-user-select: none;      /* Disable text selection on Internet Explorer */
   user-select: none;          /* Disable text selection on modern browsers */
-
 }
 
+/* Prevent focus outline for all clickable elements (buttons, inputs, etc.) */
+button, a, #restart-button {
+  outline: none;  /* Remove outline when focused */
+}
+
+/* Prevent text selection and prevent "blue selection" on interactive elements */
+button, a, #restart-button, body {
+  user-select: none; /* Prevent text selection */
+  -webkit-user-select: none;  /* Safari */
+  -moz-user-select: none;     /* Firefox */
+  -ms-user-select: none;      /* Internet Explorer/Edge */
+}
+
+/* Additionally, for the restart button specifically */
+#restart-button:focus {
+  outline: none; /* Ensure no outline on focus */
+}
+
+/* Prevent the blue highlight effect on the restart button when clicked */
+#restart-button:active {
+  outline: none;
+  box-shadow: none; /* Remove any box-shadow during active state */
+}
+
+/* Prevent focus styles from appearing on the body or entire document */
+body:focus {
+  outline: none;
+}
 
 #instructions {
   display: none;
@@ -73,11 +100,6 @@ a:visited {
   border-radius: 20px;
 }
 
-#results {
-}
-
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
-
 #score {
   position: absolute;
   color: rgb(231, 39, 132);
@@ -88,35 +110,53 @@ a:visited {
   left: 34%;
   font-family: 'Press Start 2P', cursive; /* Apply the block-like font */
   filter: drop-shadow(0 0 14px rgb(231, 39, 132)); 
-
 }
-#restart-button {
-    background: none;
-    border: none;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    font-size: 16px;
-    margin-top: 400px;
-    left: 42%;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #ffbad7 0%, #e50776 80%);
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    filter: drop-shadow(0 0 14px rgb(231, 39, 132)); 
 
+#restart-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  margin-top: 400px;
+  left: 42%;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ffbad7 0%, #e50776 80%);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 14px rgb(231, 39, 132)); 
+  -webkit-user-select: none;  
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none;  /* Remove focus outline */
+}
+
+#restart-button:focus {
+  outline: none;  /* Ensure no focus outline on button */
 }
 
 #restart-button:hover {
-    background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%, #f84da2 50%, #470020 100%);
-    transform: scale(1.1);
+  background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%, #f84da2 50%, #470020 100%);
+  transform: scale(1.1);
+  outline: none;  /* Ensure no focus outline on button */
+  -webkit-user-select: none;  
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  outline: none;  /* Ensure no focus outline on button */
+  -webkit-user-select: none;  
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 
