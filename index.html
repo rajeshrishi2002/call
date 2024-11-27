@@ -17,6 +17,10 @@
       <div id="score">0</div>
         <span>Learn Three.js + Cannon.js</span>
       </a>
+<!-- Add this inside your HTML body -->
+<div id="restart-button" style="display: none; position: absolute; top: 20px; left: 20px; background: #333; color: white; padding: 10px; cursor: pointer;">
+    Restart Game
+  </div>
 </body>
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
@@ -69,6 +73,31 @@ a:visited {
   font-weight: bold;
   top: 30px;
   right: 30px;
+}
+#restart-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #ffbad7 0%, #e50776 80%);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+#restart-button:hover {
+    background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%, #f84da2 50%, #470020 100%);
+    transform: scale(1.1);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 
@@ -327,7 +356,7 @@ function splitBlockAndAddNextOneIfOverlaps() {
 function missedTheSpot() {
   const topLayer = stack[stack.length - 1];
 
-  // Turn to top layer into an overhang and let it fall down
+  // Turn the top layer into an overhang and let it fall down
   addOverhang(
     topLayer.threejs.position.x,
     topLayer.threejs.position.z,
@@ -338,8 +367,21 @@ function missedTheSpot() {
   scene.remove(topLayer.threejs);
 
   gameEnded = true;
+
+  // Show the restart button
+  const restartButton = document.getElementById("restart-button");
+  if (restartButton) restartButton.style.display = "block";  // Show the button
+
   if (resultsElement && !autopilot) resultsElement.style.display = "flex";
 }
+
+document.getElementById("restart-button").addEventListener("click", function() {
+  // Hide the restart button
+  this.style.display = "none";
+  
+  // Restart the game
+  startGame();
+});
 
 function animation(time) {
   if (lastTime) {
@@ -411,6 +453,7 @@ window.addEventListener("resize", () => {
   // Reset renderer
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.render(scene, camera);
+  
 });
 
 </script>
