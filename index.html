@@ -240,12 +240,14 @@ function startGame() {
   stack = [];
   overhangs = [];
  
-    gameStartAudio.play(); // Play the start audio
-    gameStarted = true;    // Flag that the game has started
+  gameStartAudio.play(); // Play the start audio
+  gameStarted = true;    // Flag that the game has started
 
   if (instructionsElement) instructionsElement.style.display = "none";
   if (resultsElement) resultsElement.style.display = "none";
-  if (scoreElement) scoreElement.innerText = 0;
+  
+  // Set score to '00' initially (two digits)
+  if (scoreElement) scoreElement.innerText = '00';
 
   if (world) {
     // Remove every object from world
@@ -274,6 +276,7 @@ function startGame() {
     camera.lookAt(0, 0, 0);
   }
 }
+
 
 function addLayer(x, z, width, depth, direction) {
   const y = boxHeight * stack.length; // Add the new box one layer higher
