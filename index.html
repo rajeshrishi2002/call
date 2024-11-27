@@ -30,9 +30,11 @@
       </div>
     </div>
     <div id="score">00</div>
-
+    <div id="swipe-text" style="display: none;">Swipe to play</div>
+    <div id="dynamic-text" style="display: none; position: absolute; top: 220px; left: 50%; transform: translateX(-50%); color: white; font-size: 15px; text-align: center;filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+    </div>
     <div id="restart-button" style="display: none; position: absolute;">
-      Play
+    Play Again
     </div>
     <div id="low-score-gif" style="display: none; position: absolute; top: 200px; left: 50%; transform: translateX(-50%);">
         <img src="blocked.gif" alt="Low Score GIF">
@@ -55,7 +57,7 @@
 
 body {
   margin: 0;
-  color: white;
+  color: rgb(0, 0, 0);
   cursor: pointer;
   font-family: 'Pacifico', cursive;
   background-image: url('b1.jpeg');
@@ -81,7 +83,27 @@ body {
     opacity: 1; /* Initially hidden */
     width: 60px;
 }
+#dynamic-text{
+    font-family: 'Press Start 2P', cursive;
+}
 
+#swipe-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 15px;
+  color: rgb(255, 255, 255);
+  text-shadow: 0 0 10px rgb(255, 138, 195);
+  animation: swipeAnimation 2s infinite;
+}
+
+@keyframes swipeAnimation {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
 
 button, a, #restart-button {
   outline: none;
@@ -128,8 +150,9 @@ a:visited {
   text-align: center;
   font-size: 16px;
   margin-top: 400px;
-  left: 42%;
+  left: 25%;
   padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive;
   background: linear-gradient(135deg, #ffbad7 0%, #e50776 80%);
   border-radius: 10px;
   transition: all 0.3s ease;
@@ -170,6 +193,10 @@ init();
 // Determines how precise the game is on autopilot
 function setRobotPrecision() {
   robotPrecision = Math.random() * 1 - 0.5;
+   // Show the "Swipe" text during autopilot mode
+   if (autopilot) {
+    document.getElementById("swipe-text").style.display = "block";
+  }
 }
 
 function init() {
@@ -274,6 +301,13 @@ function startGame() {
     // Reset camera positions
     camera.position.set(4, 4, 4);
     camera.lookAt(0, 0, 0);
+  }
+  if (autopilot) {
+    // Show the "Swipe" text during autopilot mode
+    document.getElementById("swipe-text").style.display = "block";
+  } else {
+    // Hide the "Swipe" text when autopilot is off
+    document.getElementById("swipe-text").style.display = "none";
   }
 }
 
@@ -414,6 +448,7 @@ function splitBlockAndAddNextOneIfOverlaps() {
   }
 }
 
+// Function to handle the missed spot when the game ends
 function missedTheSpot() {
   const topLayer = stack[stack.length - 1];
   addOverhang(
@@ -425,12 +460,22 @@ function missedTheSpot() {
   world.remove(topLayer.cannonjs);
   scene.remove(topLayer.threejs);
   gameEnded = true;
-    // Stop the game start audio when the game ends
-    gameStartAudio.pause();
-  gameStartAudio.currentTime = 0; // Reset the audio
-  const restartButton = document.getElementById("restart-button");
-  if (restartButton) restartButton.style.display = "block";  // Show the button
 
+  // Stop the game start audio when the game ends
+  gameStartAudio.pause();
+  gameStartAudio.currentTime = 0; // Reset the audio
+
+  // Only show the restart button if autopilot is not enabled
+  const restartButton = document.getElementById("restart-button");
+  const dynamicText = document.getElementById("dynamic-text");
+
+  // Check if autopilot is not enabled, then show the restart button
+  if (!autopilot) {
+    // Show the restart button when autopilot is not active (manual mode)
+    if (restartButton) restartButton.style.display = "block"; 
+  }
+
+  // Ensure the results element is visible (for manual mode)
   if (resultsElement && !autopilot) resultsElement.style.display = "flex";
 
   // Set the score color to the last block's color when the game ends
@@ -438,12 +483,77 @@ function missedTheSpot() {
   if (scoreElement) {
     scoreElement.style.color = blockColor;
   }
+
+  // Hide "Swipe" text when the game ends (if autopilot is active)
+  if (autopilot) {
+    document.getElementById("swipe-text").style.display = "none";
+  }
+
+  // Handle dynamic text visibility based on score (only for manual mode)
+  if (!autopilot) {
+    // Clear the previous text before setting the new message
+    if (dynamicText) {
+      dynamicText.innerHTML = ''; // Clear any previous text
+      dynamicText.style.display = "block"; // Ensure it's visible
+      dynamicText.style.opacity = 0; // Start with opacity 0 for fade-in effect
+
+      // Get the current score (assuming score is based on stack length)
+      const score = stack.length - 1; // Adjust this based on your actual scoring system
+
+      let message = '';
+      if (score <= 20) {
+        message = "Reels ,shorts mattum nalla swipe pandra ithula panna theriyalaiye unaku";
+      } else if (score >= 21 && score <= 29) {
+        message = "super da innum konjam try panni 30 aim pannu";
+      } else if (score >= 30) {
+        message = "nee vera level da";
+      }
+
+      // Set the message text
+      dynamicText.innerHTML = message;
+
+      // Apply the fade-in effect
+      fadeInText(dynamicText);
+    }
+  } else {
+    // Hide dynamic text if autopilot is enabled
+    if (dynamicText) {
+      dynamicText.style.display = "none";
+    }
+  }
 }
-// Event listener for the "Play" button click
+
+// Fade-in effect for the dynamic text
+function fadeInText(element) {
+  let opacity = 0; 
+  element.style.transition = "opacity 1s"; // Transition time for fade-in
+
+  // Increment the opacity gradually
+  const interval = setInterval(function() {
+    if (opacity < 1) {
+      opacity += 0.05; // Adjust this value for a faster/slower fade
+      element.style.opacity = opacity;
+    } else {
+      clearInterval(interval); // Stop the animation once it's fully visible
+    }
+  }, 50);
+}
+
+// Event listener for the "Restart" button click
 document.getElementById("restart-button").addEventListener("click", function() {
-  startGame(); // Restart the game
-  this.style.display = "none"; // Hide the button after starting the game
+  const dynamicText = document.getElementById("dynamic-text");
+
+  // Hide the dynamic text when the restart button is clicked
+  if (dynamicText) {
+    dynamicText.style.display = "none"; // Hide the dynamic text
+    dynamicText.innerHTML = ''; // Clear the dynamic text content
+  }
+
+  // Restart the game
+  startGame(); // Restart the game logic
+  this.style.display = "none"; // Hide the restart button after clicking
 });
+
 function animation(time) {
   if (lastTime) {
     const timePassed = time - lastTime;
@@ -494,5 +604,7 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.render(scene, camera); 
 });
+
+
 </script>
 </html>
