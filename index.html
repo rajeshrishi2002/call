@@ -1,598 +1,417 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Solluu</title>
-    <link rel="preload" href="b1.jpeg" as="image">
-    <link rel="preload" href="dp.gif" as="image">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/4.0.1/wavesurfer.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+</head>
+<body>
+      <div id="results">
+        <div class="content">
+          <p>You missed the block</p>
+          <p>To reset the game press R</p>
+        </div>
+      </div>
+      <div id="score">0</div>
+        <span>Learn Three.js + Cannon.js</span>
+      </a>
+</body>
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
+
 body {
   margin: 0;
-  padding: 0;
-  background-image: url('b1.jpeg');
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden; /* Prevent content from overflowing */
-  font-family: 'Pacifico', cursive; 
+  color: white;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  cursor: pointer;
 }
-        .blur-background {
-            filter: blur(2px); 
-        }
-        .floating-word {
-    position: absolute;
-    font-size: 20px;
-    color: rgba(255, 255, 255, 0.7); /* Reduced opacity */
-    white-space: nowrap;
-    pointer-events: none;
-    animation: float 2s linear forwards;
-    font-family: 'Pacifico', cursive;
-    z-index: 1; /* Ensure they are behind other elements */
-    text-shadow: drop-shadow(0 0 10px rgba(255, 255, 255, 0.945)); /* Adjust color and spread */
 
+#instructions {
+  display: none;
 }
-        @keyframes float {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100vh); opacity: 0; }
-        }
-        @keyframes floatCenter {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); } /* Adjust the float height */
-        }
-        #centerGif {
-            position: fixed;
-            top: 37%;
-            left: 27%;
-            transform: translate(-50%, -50%);
-            z-index: 1; /* Ensure it appears above other elements */
-            width: 190px;
-            animation: floatCenter 3s ease-in-out infinite; /* Apply the floating animation */
-            filter: drop-shadow(0 0 40px rgba(255, 148, 193, 0.945)); /* Adjust color and spread */
-        }       
-        .message-cloud {
-    position: absolute;
-    background-image: url(''); /* Replace with your cloud image */
-    background-size: cover; /* Ensure the image covers the entire cloud */
-    background-color: #ffffff;
-    border-radius: 15px;
-        padding:10px 20px;
-        color: #d41889;
-        font-family: 'Dancing Script', cursive;
-        font-weight: bold;
-        z-index: 2;
-        transform: translate(-50%, -100%);
-        transition: opacity 0.5s;
-        animation: pop-in 0.3s ease forwards; /* Keep only the pop-in animation */
-        filter: hue-rotate(25deg); /* Adjust the hue value as needed */
-box-shadow:0 0 40px rgba(255, 148, 193, 0.945);
-}
-    @keyframes pop-in {
-        from {
-            transform: translate(-50%, -120%);
-            opacity: 0;
-        }
-        to {
-            transform: translate(-50%, -100%);
-            opacity: 1;
-        }
-    }
 
-    .arrow {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        margin-left: -10px;
-        width: 0;
-        height: 0;
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
-        border-top: 10px solid rgb(255, 255, 255);
-    }
-    .message-cloud::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 15px;
-        z-index: 1; /* Behind the message */
-        opacity: 0.5; /* Slight transparency */
-        filter: drop-shadow(0 0 30px rgba(255, 148, 193, 0.945)); /* Adjust color and spread */
-
-    }
-#footerImage {
-    position: absolute;
-    bottom: 20px; /* Adjust distance from the bottom as needed */
-    left: 50%;
-    transform: translateX(-50%); /* Center horizontally */
-    opacity: 1; /* Initially hidden */
-    width: 60px;
+#results,
+body:hover #instructions {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
 }
-.hidden {
-            display: none;
-        }
-        .disclaimer-point {
-        display: flex; /* Align image and title horizontally */
-        align-items: center; /* Vertically center image and title */
-        margin-bottom: 7px;
-        cursor: pointer;
-    }
-    .disclaimer-img {
-        width: 30px;
-        height: 30px;
-        margin-right: 3px;
-        margin-left: 22px;
-        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.945)); /* Adjust color and spread */
-    }  .disclaimer-btn {
-            background: none;
-            border: none;
-            color: #ff87c3;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            font-size: 16px;
-            user-select: none;
-            margin-left: 5px;
-        }   .disclaimer-description{
-            color: #ffffff;
-            font-size: 15px;
-            text-align: center;
 
-        }  .button-container {
-    display: flex;              
-    justify-content: center;    
-    margin-top: 20px;     
-} 
+a:visited {
+  color: inherit;
+}
 
-#truthDareCard {
-    position: fixed;
-    top: 51%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(10deg);
-    width: 80%;
-    z-index: 1000;
-    max-width: 500px;
-    padding: 20px;
-    color: white;
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgb(255, 165, 203);
-    background: linear-gradient(135deg, #ffcae4 0%, #ff92bf 30%, #f7eaf0 80%, #b8316d 100%);
-    display: none;
-    animation: slideIn 0.5s forwards, rotateCard 0.5s forwards;
-    text-align: center;
+#results {
+  display: none;
+  cursor: default;
 }
-#backgroundImage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('bg2.gif');
-    background-size: cover;
-    background-position: center;
-    filter: hue-rotate(20deg); /* Apply hue rotation only to the image */
-    z-index: -1; /* Ensure it's behind the content */
-}
-#content {
-    top: 10px;
-    position: relative;
-    z-index: 1; /* Ensure it's above the background image */
-}
-        @keyframes slideIn {
-            0% {
-                transform: translate(100%, -50%) rotate(10deg);
-            }
-            100% {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-        }
 
-        @keyframes rotateCard {
-            0% { transform: translate(-50%, -50%) rotate(10deg); }
-            100% { transform: translate(-50%, -50%) rotate(0deg); }
-        }#dpGif {
-    width: 70px; /* Adjust the size of the DP GIF */
-    height: auto;
-    z-index: 3;
-    position: absolute;
-    top: -40px; /* Position it above the card */
-    left: 50%;
-    transform: translateX(-50%); /* Center horizontally */
-    margin-bottom: -10%; /* 10% of the bottom of the DP should be inside the card */
-    filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));
-}        .truth-button, .dare-button {
-            background: linear-gradient(135deg, #ffbad7 0%, #f13191 80%);
-            border: none;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            font-size: 18px;
-            padding: 12px 25px;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            margin: 10px;
-        }
-        .truth-button:hover, .dare-button:hover {
-            background: linear-gradient(135deg, #f13191 0%, #ffbad7 80%);
-            transform: scale(1.1);
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .truth-button {
-            background: none;
-            border: none;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            font-size: 16px;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #ffbad7 0%, #f13191 80%);
-            border-radius: 10px;
-        }
-        .dare-button {
-            background: none;
-            border: none;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            font-size: 16px;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #ffbad7 0%, #f13191 80%);
-            border-radius: 10px;
-        }
+#results .content,
+#instructions .content {
+  max-width: 300px;
+  padding: 50px;
+  border-radius: 20px;
+}
+
+#results {
+}
+
+#score {
+  position: absolute;
+  color: white;
+  font-size: 3em;
+  font-weight: bold;
+  top: 30px;
+  right: 30px;
+}
+
+
 </style>
-</head>
-<body class="text-white h-screen flex flex-col" id="messageInput" >
-    <img id="footerImage" src="rkr.png" alt="Footer Image" style=" filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
-    <div id="floatingWords" class="absolute inset-0 pointer-events-none"></div>
-    <div class="flex items-center p-0">
-        <img alt="Profile picture" id="profilePic" src="icon.png" style="margin-top: -25px; width:120px;filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
-        <div class="ml-4 flex-1"></div>
-        <div class="flex space-x-4">
-            <i id="infoIcon" class="fas fa-exclamation-circle text-white cursor-pointer" style="font-size: 24px; margin-bottom: 30px; margin-right: 10px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));"></i>
-        </div>
-    </div>
-    <img id="centerGif" src="dp.gif" alt="Center GIF" >
-          <div id="truthDareCard">
-            <div id="backgroundImage"></div>
-                           <div id="dpGif"> 
-                        <img alt="Profile picture" class="rounded-full" src="dp2.jpeg" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));" />
-                    <span id="onlineButton" class="absolute bottom-12 right-0 w-5 h-5 rounded-full bg-gradient-to-r from-pink-900 to-pink-500 border-2 border-white flex items-center justify-center shadow-lg transition-colors duration-300" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
-                        <i class="fas fa-heart text-white text-xs" style="margin-top: 1px;"></i>
-                    </span>
-                    <div id="mindVoiceIcon" class="absolute bottom-12 right-0 w-5 h-5 rounded-full bg-gradient-to-r from-pink-900 to-pink-500 border-2 border-white flex items-center justify-center hidden" style="filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
-                        <img src="icon.png" alt="Mind Voice Icon" class="w-full h-full" />
-                    </div>
-                </div>
-                <div id="content">
-                <p id="cardQuestion">This is a sample truth question.</p>
-                </div>
-                <div class="button-container">
-                    <button id="maatenBtn" class="truth-button">Maaten</button>
-                    <button id="pandrenBtn" class="dare-button">Pandren</button>
-                </div>
-            </div>
-        </div>       
-    <div id="infoModal" class="fixed inset-0 flex items-center justify-center  hidden" style="z-index: 1000;  overflow-y: auto;">
-        <div class="bg-white text-black p-6 rounded-lg shadow-lg max-w-sm" style="background: linear-gradient(135deg, #ffb1d3 0%, #e01279 30%, #82003a 80%, #e01279 100%)">           
-            <img src="disclaimer.png" style="width: 280px; display: block; margin: 0 auto;filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945)); margin-bottom: -20px; margin-top: -30px;">
-        <div id="disclaimerPoints" class="mt-2" style="margin-bottom: 30px; font-family: 'Pacifico', cursive;">
-            <div class="disclaimer-point" id="point1">
-                <img src="point.png" alt="For Fun" class="disclaimer-img">
-                <span class="disclaimer-btn">No Intent to Offend or Harm</span>
-                </div>
-                <p class="disclaimer-description hidden" id="desc1">
-                    It aims to provide a fun & friendly convo, using compliments & light-hearted roasting, all with positive intentions.</p>                   
-                    <div class="disclaimer-point" id="point2">
-                    <img src="point.png" alt="For Fun" class="disclaimer-img">
-                    <span class="disclaimer-btn">Replying Character</span>
-                    </div>
-                    <p class="disclaimer-description hidden" id="desc2">
-                     It portrays a girl character, which is intended to be playful & humorous.It is not meant to disrespect or offend any girl or woman.</p>                  
-                     <div class="disclaimer-point" id="point3">
-                        <img src="point.png" alt="For Fun" class="disclaimer-img">
-                        <span class="disclaimer-btn">Mindvoice Response</span>
-                        </div>
-                        <p class="disclaimer-description hidden" id="desc3">
-                            Some responses from her include audio to make interactions more engaging. Only designed to make your experience more lively & fun.</p>
-                       <div class="disclaimer-point" id="point4">
-                          <img src="point.png" alt="For Fun" class="disclaimer-img">
-                          <span class="disclaimer-btn">User Discretion Advised</span>
-                         </div>
-                         <p class="disclaimer-description hidden" id="desc4">
-                            I understand that humor is subjective. If at any point you feel uncomfortable with any interaction, you can choose to exit the App.</p>            
-                        </div>
- <div class="button-container">
-    <button id="closeModal" class="mt-2 px-5 py-2 bg-gray-300 rounded" style="background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%, #f13191 80%); color: #fff; border-radius: 10px;  font-family: 'Pacifico', cursive;">Mmm</button>
-</div>        </div>
-    </div>
-    <script>
-        document.getElementById('point1').addEventListener('click', function() {
-            document.getElementById('desc1').classList.toggle('hidden');
-        });   document.getElementById('point2').addEventListener('click', function() {
-            document.getElementById('desc2').classList.toggle('hidden');
-        });  document.getElementById('point3').addEventListener('click', function() {
-            document.getElementById('desc3').classList.toggle('hidden');
-        }); document.getElementById('point4').addEventListener('click', function() {
-            document.getElementById('desc4').classList.toggle('hidden');
-        });document.getElementById('closeModal').addEventListener('click', function() {
-            document.getElementById('infoModal').classList.add('hidden');
-            document.querySelectorAll('.disclaimer-description').forEach(function(description) {
-            description.classList.add('hidden');
-    });
-});
-    </script> 
-    <div class="flex flex-col items-center p-0 rounded-lg "></div>
-    <div class="flex flex-col p-4 space-y-4 overflow-y-auto flex-1 no-scrollbar" id="chatContainer" style="font-family: 'Pacifico', cursive;"></div>
-    <div class="flex items-center p-2"></div>
-    <audio id="notificationSound" src="msg.mp3" preload="auto"></audio>
-    <script>
-        const words = [
-    "Hi", "Hello", "Saptiya", "Enna pandra", "love you", "Cute",
-    "Poo di", "Poo da", "Number", "Okay", "Mmmm",
-    "Mmmm", "Online", "Solluu", "Love you too", "wow",
-    "seri", "Miss you", "Sorry", "Thanks", "Breakup",
-    "Blocked", "clg", "name", "sweet", "ayyo", "poolama", "Wait", "enna sapta", "Chlm", "love", "Solluu", "Offline", "Bye", "Solluu"
-];
-const floatingWordsContainer = document.getElementById('floatingWords');
-function createFloatingWord(word) {
-    const span = document.createElement('span');
-    span.innerText = word;
-    span.className = 'floating-word';
-    const startX = window.innerWidth / 2;
-    const startY = window.innerHeight / 2;
-    const angle = Math.random() * 2 * Math.PI;
-    const distance = Math.random() * 600 + 100; // Adjusted distance
-    let endX = startX + distance * Math.cos(angle);
-    let endY = startY + distance * Math.sin(angle);
-    endX = Math.max(0, Math.min(endX, window.innerWidth - 50));  // Subtract 50 to keep the word fully visible
-    endY = Math.max(0, Math.min(endY, window.innerHeight - 50));  // Subtract 50 to keep the word fully visible
-    span.style.left = `${startX}px`;
-    span.style.top = `${startY}px`;
-    span.style.opacity = '1';
-    floatingWordsContainer.appendChild(span);
-    span.animate([{
-        transform: `translate(0, 0)`
-    }, {
-        transform: `translate(${endX - startX}px, ${endY - startY}px)`,
-        opacity: 0
-    }], {
-        duration: 2000,
-        easing: 'linear',
-        fill: 'forwards'
-    });
-    setTimeout(() => {
-        span.remove();
-    }, 2000);
-}
-setInterval(() => {
-    const word = words[Math.floor(Math.random() * words.length)];
-    createFloatingWord(word);
-}, 700); // Adjusted interval to 1 second
-    </script>
-    <script>
-        document.getElementById('infoIcon').addEventListener('click', function () {
-            document.getElementById('infoModal').classList.remove('hidden'); // Show modal
-        });
-
-        document.getElementById('closeModal').addEventListener('click', function () {
-            document.getElementById('infoModal').classList.add('hidden'); // Hide modal
-        });
-   </script>
 <script>
+window.focus(); // Capture keys right away (by default focus is on editor)
 
-const messages = ["Truth" , "Dare"];
-const notificationSound = document.getElementById('notificationSound');
-const truthQuestions = [
-    "What is your biggest fear?",
-];
-const dareChallenges = [
-    "Dance like no one is watching!",
-];
-const truthAudio = ["audio1.mp3", "audio2.mp3", "audio3.mp3", "audio4.mp3", "audio5.mp3"];
-const dareAudio = ["dare1.mp3", "dare2.mp3", "dare3.mp3", "dare4.mp3", "dare5.mp3"];
+let camera, scene, renderer; // ThreeJS globals
+let world; // CannonJs world
+let lastTime; // Last timestamp of animation
+let stack; // Parts that stay solid on top of each other
+let overhangs; // Overhanging parts that fall down
+const boxHeight = 1; // Height of each layer
+const originalBoxSize = 3; // Original width and height of a box
+let autopilot;
+let gameEnded;
+let robotPrecision; // Determines how precise the game is on autopilot
 
-function createMessageCloud() {
-    const messageContainer = document.createElement('div');
-    messageContainer.className = 'message-cloud';
-    messageContainer.innerText = messages[Math.floor(Math.random() * messages.length)];
-    notificationSound.currentTime = 0; // Reset sound to start
-    notificationSound.play().catch(error => {
-        console.error('Error playing sound:', error);
-    });
+const scoreElement = document.getElementById("score");
+const instructionsElement = document.getElementById("instructions");
+const resultsElement = document.getElementById("results");
 
-    const centerGif = document.getElementById('centerGif');
-    const rect = centerGif.getBoundingClientRect();
-    messageContainer.style.left = `${rect.left + rect.width / 2}px`;
-    messageContainer.style.top = `${rect.top}px`;
+init();
 
-    const arrow = document.createElement('div');
-    arrow.className = 'arrow';
-    messageContainer.appendChild(arrow);
-    document.body.appendChild(messageContainer);
-
-    // Initially, allow clicks on the cloud
-    messageContainer.style.pointerEvents = 'auto';  // Ensure clicking is allowed initially
-
-    messageContainer.addEventListener('click', () => {
-        const card = document.getElementById('truthDareCard');
-        card.style.display = 'block';
-        centerGif.style.display = 'none'; // Hide the center GIF
-        const floatingWords = document.getElementById('floatingWords');
-        floatingWords.style.display = 'none'; // Hide the floating words
-
-        // Remove any existing buttons before adding new ones
-        const existingPandrenButton = document.querySelector('.truth-button');
-        const existingMaatenButton = document.querySelector('.dare-button');
-        if (existingPandrenButton) existingPandrenButton.remove();
-        if (existingMaatenButton) existingMaatenButton.remove();
-
-        const randomChoice = Math.random() < 0.5 ? 'truth' : 'dare'; // Randomly pick truth or dare
-if (randomChoice === 'truth') {
-    const truthIndex = Math.floor(Math.random() * truthQuestions.length);
-    document.getElementById('cardQuestion').innerText = truthQuestions[truthIndex];
-    const truthSound = new Audio(truthAudio[truthIndex]);
-    truthSound.play();
-    messageContainer.innerText = 'Truth';
-    messageContainer.appendChild(arrow);
-
-    // Remove any existing truth buttons if they exist
-    const existingButtons = card.querySelectorAll('.truth-button');
-    existingButtons.forEach(button => button.remove());
-
-    // For Truth, we will show "Ama" and "Illa" buttons
-    const amaButton = document.createElement('button');
-    amaButton.innerText = 'Ama';
-    amaButton.classList.add('truth-button'); // Add a class to identify this button
-    const illaButton = document.createElement('button');
-    illaButton.innerText = 'Illa';
-    illaButton.classList.add('truth-button'); // Add a class to identify this button
-
-    card.appendChild(amaButton);
-    card.appendChild(illaButton);
-
-    // Function to disable both buttons once one is clicked
-    const disableButtons = () => {
-        amaButton.disabled = true;
-        illaButton.disabled = true;
-    };
-
-    // If Ama is clicked
-    amaButton.addEventListener('click', () => {
-        // Change message and play an audio
-        messageContainer.innerText = 'Ok Ok';
-        messageContainer.appendChild(arrow);
-
-        const amaAudio = new Audio('address.mp3');  // Use your desired audio file
-        amaAudio.play();
-        amaAudio.onended = () => {
-            // After audio ends, reset and hide the card
-            setTimeout(() => {
-                card.style.display = 'none';
-                centerGif.style.display = 'block';
-                floatingWords.style.display = 'block';
-                createMessageCloud(); // Recreate the message cloud
-                messageContainer.classList.add('hidden');
-            }, 1000); // Delay to ensure everything finishes playing
-        };
-        
-        // Disable the other button after one is clicked
-        disableButtons();
-    });
-
-    // If Illa is clicked
-    illaButton.addEventListener('click', () => {
-        // Change message and play an audio
-        messageContainer.innerText = 'Paavam';
-        messageContainer.appendChild(arrow);
-
-        const illaAudio = new Audio('saavu.mp3');  // Use your desired audio file
-        illaAudio.play();
-        illaAudio.onended = () => {
-            // After audio ends, reset and hide the card
-            setTimeout(() => {
-                card.style.display = 'none';
-                centerGif.style.display = 'block';
-                floatingWords.style.display = 'block';
-                createMessageCloud(); // Recreate the message cloud
-                messageContainer.classList.add('hidden');
-            }, 1000); // Delay to ensure everything finishes playing
-        };
-
-        // Disable the other button after one is clicked
-        disableButtons();
-    });
-
-}
- else {
-            // Your existing Dare logic remains here (unchanged)
-            const dareIndex = Math.floor(Math.random() * dareChallenges.length);
-            document.getElementById('cardQuestion').innerText = dareChallenges[dareIndex];
-            const dareSound = new Audio(dareAudio[dareIndex]);
-            dareSound.play();
-            messageContainer.appendChild(arrow);
-
-            // For Dare, add the buttons
-            const pandrenButton = document.createElement('button');
-            pandrenButton.innerText = 'Pandren';
-            pandrenButton.classList.add('truth-button'); // Add a class to identify this button
-            const maatenButton = document.createElement('button');
-            maatenButton.innerText = 'Maaten';
-            maatenButton.classList.add('dare-button'); // Add a class to identify this button
-
-            card.appendChild(pandrenButton);
-            card.appendChild(maatenButton);
-
-            let maatenClickCount = 0;
-            maatenButton.addEventListener('click', () => {
-                if (maatenClickCount === 0) {
-                    document.getElementById('cardQuestion')
-                    messageContainer.innerText = 'Enakaga pannamaatiya';
-                    maatenClickCount++;
-                    messageContainer.appendChild(arrow);
-
-                } else if (maatenClickCount === 1) {
-                    document.getElementById('cardQuestion')
-                    messageContainer.innerText = 'Mairu pandra';
-                    const mairuAudio = new Audio('mairu_pandra_audio.mp3');
-                    mairuAudio.play();
-                    maatenButton.style.display = 'none';
-                    pandrenButton.style.display = 'block';
-                    messageContainer.appendChild(arrow);
-
-                }
-            });
-
-            pandrenButton.addEventListener('click', () => {
-                messageContainer.innerText = 'Good Boy';
-                messageContainer.appendChild(arrow);
-
-                setTimeout(() => {
-                    card.style.display = 'none';
-                    centerGif.style.display = 'block';
-                    floatingWords.style.display = 'block';
-                    createMessageCloud(); // Recreate the message cloud
-                    messageContainer.classList.add('hidden');
-                    pandrenButton.style.display = 'none';
-                }, 1000);
-            });
-        }
-
-        // Disable further clicks on the message cloud after the card is shown
-        messageContainer.style.pointerEvents = 'none';  // Disable clicking after card shows
-    });
+// Determines how precise the game is on autopilot
+function setRobotPrecision() {
+  robotPrecision = Math.random() * 1 - 0.5;
 }
 
-setTimeout(() => {
-    createMessageCloud();
-}, 1400);
+function init() {
+  autopilot = true;
+  gameEnded = false;
+  lastTime = 0;
+  stack = [];
+  overhangs = [];
+  setRobotPrecision();
+
+  // Initialize CannonJS
+  world = new CANNON.World();
+  world.gravity.set(0, -10, 0); // Gravity pulls things down
+  world.broadphase = new CANNON.NaiveBroadphase();
+  world.solver.iterations = 40;
+
+  // Initialize ThreeJs
+  const aspect = window.innerWidth / window.innerHeight;
+  const width = 10;
+  const height = width / aspect;
+
+  camera = new THREE.OrthographicCamera(
+    width / -2, // left
+    width / 2, // right
+    height / 2, // top
+    height / -2, // bottom
+    0, // near plane
+    100 // far plane
+  );
 
 
-document.getElementById('closeCardBtn').addEventListener('click', () => {
-    const card = document.getElementById('truthDareCard');
-    card.style.display = 'none';
-    const centerGif = document.getElementById('centerGif');
-    centerGif.style.display = 'block';
-    const floatingWords = document.getElementById('floatingWords');
-    floatingWords.style.display = 'block';
+  camera.position.set(4, 4, 4);
+  camera.lookAt(0, 0, 0);
+
+  scene = new THREE.Scene();
+
+  // Foundation
+  addLayer(0, 0, originalBoxSize, originalBoxSize);
+
+  // First layer
+  addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+
+  // Set up lights
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambientLight);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+  dirLight.position.set(10, 20, 0);
+  scene.add(dirLight);
+
+  // Set up renderer
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setAnimationLoop(animation);
+  document.body.appendChild(renderer.domElement);
+}
+
+function startGame() {
+  autopilot = false;
+  gameEnded = false;
+  lastTime = 0;
+  stack = [];
+  overhangs = [];
+
+  if (instructionsElement) instructionsElement.style.display = "none";
+  if (resultsElement) resultsElement.style.display = "none";
+  if (scoreElement) scoreElement.innerText = 0;
+
+  if (world) {
+    // Remove every object from world
+    while (world.bodies.length > 0) {
+      world.remove(world.bodies[0]);
+    }
+  }
+
+  if (scene) {
+    // Remove every Mesh from the scene
+    while (scene.children.find((c) => c.type == "Mesh")) {
+      const mesh = scene.children.find((c) => c.type == "Mesh");
+      scene.remove(mesh);
+    }
+
+    // Foundation
+    addLayer(0, 0, originalBoxSize, originalBoxSize);
+
+    // First layer
+    addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+  }
+
+  if (camera) {
+    // Reset camera positions
+    camera.position.set(4, 4, 4);
+    camera.lookAt(0, 0, 0);
+  }
+}
+
+function addLayer(x, z, width, depth, direction) {
+  const y = boxHeight * stack.length; // Add the new box one layer higher
+  const layer = generateBox(x, y, z, width, depth, false);
+  layer.direction = direction;
+  stack.push(layer);
+}
+
+function addOverhang(x, z, width, depth) {
+  const y = boxHeight * (stack.length - 1); // Add the new box one the same layer
+  const overhang = generateBox(x, y, z, width, depth, true);
+  overhangs.push(overhang);
+}
+
+function generateBox(x, y, z, width, depth, falls) {
+  // ThreeJS
+  const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
+  const color = new THREE.Color(`hsl(340, 100%, ${50 + stack.length * 5}%)`);
+  const material = new THREE.MeshLambertMaterial({ color });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(x, y, z);
+  scene.add(mesh);
+
+  // CannonJS
+  const shape = new CANNON.Box(
+    new CANNON.Vec3(width / 2, boxHeight / 2, depth / 2)
+  );
+  let mass = falls ? 5 : 0; // If it shouldn't fall then setting the mass to zero will keep it stationary
+  mass *= width / originalBoxSize; // Reduce mass proportionately by size
+  mass *= depth / originalBoxSize; // Reduce mass proportionately by size
+  const body = new CANNON.Body({ mass, shape });
+  body.position.set(x, y, z);
+  world.addBody(body);
+
+  return {
+    threejs: mesh,
+    cannonjs: body,
+    width,
+    depth
+  };
+}
+
+function cutBox(topLayer, overlap, size, delta) {
+  const direction = topLayer.direction;
+  const newWidth = direction == "x" ? overlap : topLayer.width;
+  const newDepth = direction == "z" ? overlap : topLayer.depth;
+
+  // Update metadata
+  topLayer.width = newWidth;
+  topLayer.depth = newDepth;
+
+  // Update ThreeJS model
+  topLayer.threejs.scale[direction] = overlap / size;
+  topLayer.threejs.position[direction] -= delta / 2;
+
+  // Update CannonJS model
+  topLayer.cannonjs.position[direction] -= delta / 2;
+
+  // Replace shape to a smaller one (in CannonJS you can't simply just scale a shape)
+  const shape = new CANNON.Box(
+    new CANNON.Vec3(newWidth / 2, boxHeight / 2, newDepth / 2)
+  );
+  topLayer.cannonjs.shapes = [];
+  topLayer.cannonjs.addShape(shape);
+}
+
+window.addEventListener("mousedown", eventHandler);
+window.addEventListener("touchstart", eventHandler);
+window.addEventListener("keydown", function (event) {
+  if (event.key == " ") {
+    event.preventDefault();
+    eventHandler();
+    return;
+  }
+  if (event.key == "R" || event.key == "r") {
+    event.preventDefault();
+    startGame();
+    return;
+  }
+});
+
+function eventHandler() {
+  if (autopilot) startGame();
+  else splitBlockAndAddNextOneIfOverlaps();
+}
+
+function splitBlockAndAddNextOneIfOverlaps() {
+  if (gameEnded) return;
+
+  const topLayer = stack[stack.length - 1];
+  const previousLayer = stack[stack.length - 2];
+
+  const direction = topLayer.direction;
+
+  const size = direction == "x" ? topLayer.width : topLayer.depth;
+  const delta =
+    topLayer.threejs.position[direction] -
+    previousLayer.threejs.position[direction];
+  const overhangSize = Math.abs(delta);
+  const overlap = size - overhangSize;
+
+  if (overlap > 0) {
+    cutBox(topLayer, overlap, size, delta);
+
+    // Overhang
+    const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
+    const overhangX =
+      direction == "x"
+        ? topLayer.threejs.position.x + overhangShift
+        : topLayer.threejs.position.x;
+    const overhangZ =
+      direction == "z"
+        ? topLayer.threejs.position.z + overhangShift
+        : topLayer.threejs.position.z;
+    const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
+    const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
+
+    addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
+
+    // Next layer
+    const nextX = direction == "x" ? topLayer.threejs.position.x : -10;
+    const nextZ = direction == "z" ? topLayer.threejs.position.z : -10;
+    const newWidth = topLayer.width; // New layer has the same size as the cut top layer
+    const newDepth = topLayer.depth; // New layer has the same size as the cut top layer
+    const nextDirection = direction == "x" ? "z" : "x";
+
+    if (scoreElement) scoreElement.innerText = stack.length - 1;
+    addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+  } else {
+    missedTheSpot();
+  }
+}
+
+function missedTheSpot() {
+  const topLayer = stack[stack.length - 1];
+
+  // Turn to top layer into an overhang and let it fall down
+  addOverhang(
+    topLayer.threejs.position.x,
+    topLayer.threejs.position.z,
+    topLayer.width,
+    topLayer.depth
+  );
+  world.remove(topLayer.cannonjs);
+  scene.remove(topLayer.threejs);
+
+  gameEnded = true;
+  if (resultsElement && !autopilot) resultsElement.style.display = "flex";
+}
+
+function animation(time) {
+  if (lastTime) {
+    const timePassed = time - lastTime;
+    const speed = 0.008;
+
+    const topLayer = stack[stack.length - 1];
+    const previousLayer = stack[stack.length - 2];
+
+    // The top level box should move if the game has not ended AND
+    // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
+    const boxShouldMove =
+      !gameEnded &&
+      (!autopilot ||
+        (autopilot &&
+          topLayer.threejs.position[topLayer.direction] <
+            previousLayer.threejs.position[topLayer.direction] +
+              robotPrecision));
+
+    if (boxShouldMove) {
+      // Keep the position visible on UI and the position in the model in sync
+      topLayer.threejs.position[topLayer.direction] += speed * timePassed;
+      topLayer.cannonjs.position[topLayer.direction] += speed * timePassed;
+
+      // If the box went beyond the stack then show up the fail screen
+      if (topLayer.threejs.position[topLayer.direction] > 10) {
+        missedTheSpot();
+      }
+    } else {
+      // If it shouldn't move then is it because the autopilot reached the correct position?
+      // Because if so then next level is coming
+      if (autopilot) {
+        splitBlockAndAddNextOneIfOverlaps();
+        setRobotPrecision();
+      }
+    }
+
+    // 4 is the initial camera height
+    if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
+      camera.position.y += speed * timePassed;
+    }
+
+    updatePhysics(timePassed);
+    renderer.render(scene, camera);
+  }
+  lastTime = time;
+}
+
+function updatePhysics(timePassed) {
+  world.step(timePassed / 1000); // Step the physics world
+
+  // Copy coordinates from Cannon.js to Three.js
+  overhangs.forEach((element) => {
+    element.threejs.position.copy(element.cannonjs.position);
+    element.threejs.quaternion.copy(element.cannonjs.quaternion);
+  });
+}
+
+window.addEventListener("resize", () => {
+  // Adjust camera
+  console.log("resize", window.innerWidth, window.innerHeight);
+  const aspect = window.innerWidth / window.innerHeight;
+  const width = 10;
+  const height = width / aspect;
+
+  camera.top = height / 2;
+  camera.bottom = height / -2;
+
+  // Reset renderer
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.render(scene, camera);
 });
 
 </script>
-</body>
 </html>
