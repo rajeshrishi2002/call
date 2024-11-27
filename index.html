@@ -6,21 +6,22 @@
     <title>Document</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
 </head>
 <body>
-      <div id="results">
-        <div class="content">
-          <p>You missed the block</p>
-          <p>To reset the game press R</p>
-        </div>
+    <div id="results">
+      <div class="content">
+        <p>To reset the game press R</p>
       </div>
-      <div id="score">0</div>
-  
-      </a>
+    </div>
+    <div id="score">00</div>
+
+    </a>
 <!-- Add this inside your HTML body -->
 <div id="restart-button" style="display: none; position: absolute;">
-    Restart Game
-  </div>
+  Play
+</div>
 </body>
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
@@ -28,8 +29,8 @@
     body {
   margin: 0;
   color: white;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   cursor: pointer;
+  font-family: 'Pacifico', cursive;
   background-image: url('b1.jpeg'); /* Add your background image here */
   background-size: cover; /* Make the background cover the whole screen */
   background-position: center; /* Center the background image */
@@ -71,13 +72,17 @@ a:visited {
 #results {
 }
 
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
 #score {
   position: absolute;
   color: white;
-  font-size: 3em;
+  font-size: 4em;
   font-weight: bold;
-  top: 30px;
-  right: 30px;
+  top: 100px;
+  text-align: center;
+  left: 35%;
+  font-family: 'Press Start 2P', cursive; /* Apply the block-like font */
 }
 #restart-button {
     background: none;
@@ -246,7 +251,7 @@ function addOverhang(x, z, width, depth) {
 function generateBox(x, y, z, width, depth, falls) {
   // ThreeJS - create geometry and material for the shape
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
-  const color = new THREE.Color(`hsl(340, 100%, ${50 + stack.length * 5}%)`);
+  const color = new THREE.Color(`hsl(327, 200%, ${40 + stack.length * 6}%)`);
   const material = new THREE.MeshLambertMaterial({ color });
 
   // Create the mesh (shape) and add it to the scene
@@ -312,31 +317,23 @@ window.addEventListener("keydown", function (event) {
     return;
   }
 });
-
 function eventHandler() {
   if (autopilot) startGame();
   else splitBlockAndAddNextOneIfOverlaps();
 }
-
 function splitBlockAndAddNextOneIfOverlaps() {
   if (gameEnded) return;
-
   const topLayer = stack[stack.length - 1];
   const previousLayer = stack[stack.length - 2];
-
   const direction = topLayer.direction;
-
   const size = direction == "x" ? topLayer.width : topLayer.depth;
   const delta =
-    topLayer.threejs.position[direction] -
-    previousLayer.threejs.position[direction];
+    topLayer.threejs.position[direction] - previousLayer.threejs.position[direction];
   const overhangSize = Math.abs(delta);
   const overlap = size - overhangSize;
-
+  
   if (overlap > 0) {
     cutBox(topLayer, overlap, size, delta);
-
-    // Overhang
     const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
     const overhangX =
       direction == "x"
@@ -348,17 +345,26 @@ function splitBlockAndAddNextOneIfOverlaps() {
         : topLayer.threejs.position.z;
     const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
     const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
-
     addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
-
-    // Next layer
+    
     const nextX = direction == "x" ? topLayer.threejs.position.x : -10;
     const nextZ = direction == "z" ? topLayer.threejs.position.z : -10;
     const newWidth = topLayer.width; // New layer has the same size as the cut top layer
     const newDepth = topLayer.depth; // New layer has the same size as the cut top layer
     const nextDirection = direction == "x" ? "z" : "x";
+    
+    // Update the score to be two digits
+    if (scoreElement) {
+      const score = stack.length - 1;
+      scoreElement.innerText = score.toString().padStart(2, '0');  // Format the score to two digits
+    }
+    
+    // Update score color based on the color of the current block
+    const blockColor = topLayer.threejs.material.color.getStyle(); // Get the color of the most recent block
+    if (scoreElement) {
+      scoreElement.style.color = blockColor; // Set the score color to match the block color
+    }
 
-    if (scoreElement) scoreElement.innerText = stack.length - 1;
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
   } else {
     missedTheSpot();
@@ -367,8 +373,6 @@ function splitBlockAndAddNextOneIfOverlaps() {
 
 function missedTheSpot() {
   const topLayer = stack[stack.length - 1];
-
-  // Turn the top layer into an overhang and let it fall down
   addOverhang(
     topLayer.threejs.position.x,
     topLayer.threejs.position.z,
@@ -377,34 +381,25 @@ function missedTheSpot() {
   );
   world.remove(topLayer.cannonjs);
   scene.remove(topLayer.threejs);
-
   gameEnded = true;
-
-  // Show the restart button
   const restartButton = document.getElementById("restart-button");
   if (restartButton) restartButton.style.display = "block";  // Show the button
 
   if (resultsElement && !autopilot) resultsElement.style.display = "flex";
-}
 
-document.getElementById("restart-button").addEventListener("click", function() {
-  // Hide the restart button
-  this.style.display = "none";
-  
-  // Restart the game
-  startGame();
-});
+  // Set the score color to the last block's color when the game ends
+  const blockColor = topLayer.threejs.material.color.getStyle();
+  if (scoreElement) {
+    scoreElement.style.color = blockColor;
+  }
+}
 
 function animation(time) {
   if (lastTime) {
     const timePassed = time - lastTime;
     const speed = 0.008;
-
     const topLayer = stack[stack.length - 1];
     const previousLayer = stack[stack.length - 2];
-
-    // The top level box should move if the game has not ended AND
-    // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
     const boxShouldMove =
       !gameEnded &&
       (!autopilot ||
@@ -412,61 +407,42 @@ function animation(time) {
           topLayer.threejs.position[topLayer.direction] <
             previousLayer.threejs.position[topLayer.direction] +
               robotPrecision));
-
     if (boxShouldMove) {
-      // Keep the position visible on UI and the position in the model in sync
       topLayer.threejs.position[topLayer.direction] += speed * timePassed;
       topLayer.cannonjs.position[topLayer.direction] += speed * timePassed;
-
-      // If the box went beyond the stack then show up the fail screen
       if (topLayer.threejs.position[topLayer.direction] > 10) {
         missedTheSpot();
       }
     } else {
-      // If it shouldn't move then is it because the autopilot reached the correct position?
-      // Because if so then next level is coming
       if (autopilot) {
         splitBlockAndAddNextOneIfOverlaps();
         setRobotPrecision();
       }
     }
-
-    // 4 is the initial camera height
     if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
       camera.position.y += speed * timePassed;
     }
-
     updatePhysics(timePassed);
     renderer.render(scene, camera);
   }
   lastTime = time;
 }
-
 function updatePhysics(timePassed) {
-  world.step(timePassed / 1000); // Step the physics world
-
-  // Copy coordinates from Cannon.js to Three.js
+  world.step(timePassed / 1000); 
   overhangs.forEach((element) => {
     element.threejs.position.copy(element.cannonjs.position);
     element.threejs.quaternion.copy(element.cannonjs.quaternion);
   });
 }
-
 window.addEventListener("resize", () => {
-  // Adjust camera
   console.log("resize", window.innerWidth, window.innerHeight);
   const aspect = window.innerWidth / window.innerHeight;
   const width = 10;
   const height = width / aspect;
-
   camera.top = height / 2;
   camera.bottom = height / -2;
-
-  // Reset renderer
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.render(scene, camera);
-  
+  renderer.render(scene, camera); 
 });
-
 </script>
 </html>
