@@ -259,7 +259,7 @@ function addOverhang(x, z, width, depth) {
 function generateBox(x, y, z, width, depth, falls) {
   // ThreeJS - create geometry and material for the shape
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
-  const color = new THREE.Color(`hsl(327, 200%, ${40 + stack.length * 6}%)`);
+  const color = new THREE.Color(`hsl(327, 200%, ${30 + stack.length * 6}%)`);
   const material = new THREE.MeshLambertMaterial({ color });
 
   // Create the mesh (shape) and add it to the scene
