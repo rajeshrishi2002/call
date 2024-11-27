@@ -21,6 +21,20 @@
 <div id="restart-button" style="display: none; position: absolute;">
   Play
 </div>
+<div id="low-score-gif" style="display: none; position: absolute; top: 200px; left: 50%; transform: translateX(-50%);">
+    <img src="blocked.gif" alt="Low Score GIF">
+  </div>
+
+  <div id="high-score-gif" style="display: none; position: absolute; top: 200px; left: 50%; transform: translateX(-50%);">
+    <img src="sms.gif" alt="High Score GIF">
+  </div>
+
+  <audio id="gameStartAudio" src="mamapayale.mp3" preload="auto"></audio>
+  <audio id="gameEndAudio" src="solluu.mp3" preload="auto"></audio>
+  <audio id="gameOverAudioLow" src="saavu.mp3" preload="auto"></audio>
+  <audio id="gameOverAudioHigh" src="summa.mp3" preload="auto"></audio>
+  <audio id="initAudio" src="start.m4a" preload="auto"></audio>
+
 </body>
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
@@ -174,13 +188,12 @@ const originalBoxSize = 3; // Original width and height of a box
 let autopilot;
 let gameEnded;
 let robotPrecision; // Determines how precise the game is on autopilot
-
+let initAudio = document.getElementById("initAudio");
 const scoreElement = document.getElementById("score");
 const instructionsElement = document.getElementById("instructions");
 const resultsElement = document.getElementById("results");
 
 init();
-
 // Determines how precise the game is on autopilot
 function setRobotPrecision() {
   robotPrecision = Math.random() * 1 - 0.5;
@@ -193,7 +206,10 @@ function init() {
   stack = [];
   overhangs = [];
   setRobotPrecision();
+  
+  initAudio.play();
 
+  
   // Initialize CannonJS
   world = new CANNON.World();
   world.gravity.set(0, -10, 0); // Gravity pulls things down
@@ -250,6 +266,9 @@ function startGame() {
   lastTime = 0;
   stack = [];
   overhangs = [];
+ 
+    gameStartAudio.play(); // Play the start audio
+    gameStarted = true;    // Flag that the game has started
 
   if (instructionsElement) instructionsElement.style.display = "none";
   if (resultsElement) resultsElement.style.display = "none";
@@ -430,6 +449,9 @@ function missedTheSpot() {
   world.remove(topLayer.cannonjs);
   scene.remove(topLayer.threejs);
   gameEnded = true;
+    // Stop the game start audio when the game ends
+    gameStartAudio.pause();
+  gameStartAudio.currentTime = 0; // Reset the audio
   const restartButton = document.getElementById("restart-button");
   if (restartButton) restartButton.style.display = "block";  // Show the button
 
