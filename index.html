@@ -15,7 +15,7 @@
         </div>
       </div>
       <div id="score">0</div>
-        <span>Learn Three.js + Cannon.js</span>
+  
       </a>
 <!-- Add this inside your HTML body -->
 <div id="restart-button" style="display: none; position: absolute;">
@@ -25,12 +25,17 @@
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
 
-body {
+    body {
   margin: 0;
   color: white;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   cursor: pointer;
+  background-image: url('b1.jpeg'); /* Add your background image here */
+  background-size: cover; /* Make the background cover the whole screen */
+  background-position: center; /* Center the background image */
+  background-attachment: fixed; /* Ensure the background image stays fixed while scrolling */
 }
+
 
 #instructions {
   display: none;
@@ -82,7 +87,8 @@ a:visited {
     cursor: pointer;
     text-align: center;
     font-size: 16px;
-    margin-top: 20px;
+    margin-top: 400px;
+    left: 30%;
     padding: 10px 20px;
     background: linear-gradient(135deg, #ffbad7 0%, #e50776 80%);
     border-radius: 10px;
@@ -155,11 +161,13 @@ function init() {
     100 // far plane
   );
 
-
   camera.position.set(4, 4, 4);
   camera.lookAt(0, 0, 0);
 
   scene = new THREE.Scene();
+  
+  // Set the scene's background to transparent
+  scene.background = null; // No background color, transparent
 
   // Foundation
   addLayer(0, 0, originalBoxSize, originalBoxSize);
@@ -176,11 +184,12 @@ function init() {
   scene.add(dirLight);
 
   // Set up renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // Enable transparency
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setAnimationLoop(animation);
   document.body.appendChild(renderer.domElement);
 }
+
 
 function startGame() {
   autopilot = false;
@@ -235,21 +244,23 @@ function addOverhang(x, z, width, depth) {
 }
 
 function generateBox(x, y, z, width, depth, falls) {
-  // ThreeJS
+  // ThreeJS - create geometry and material for the shape
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
   const color = new THREE.Color(`hsl(340, 100%, ${50 + stack.length * 5}%)`);
   const material = new THREE.MeshLambertMaterial({ color });
+
+  // Create the mesh (shape) and add it to the scene
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(x, y, z);
   scene.add(mesh);
 
-  // CannonJS
+  // CannonJS - create physics body
   const shape = new CANNON.Box(
     new CANNON.Vec3(width / 2, boxHeight / 2, depth / 2)
   );
-  let mass = falls ? 5 : 0; // If it shouldn't fall then setting the mass to zero will keep it stationary
-  mass *= width / originalBoxSize; // Reduce mass proportionately by size
-  mass *= depth / originalBoxSize; // Reduce mass proportionately by size
+  let mass = falls ? 5 : 0; // If it shouldn't fall then set the mass to zero
+  mass *= width / originalBoxSize; // Scale mass by size
+  mass *= depth / originalBoxSize; // Scale mass by size
   const body = new CANNON.Body({ mass, shape });
   body.position.set(x, y, z);
   world.addBody(body);
@@ -261,6 +272,7 @@ function generateBox(x, y, z, width, depth, falls) {
     depth
   };
 }
+
 
 function cutBox(topLayer, overlap, size, delta) {
   const direction = topLayer.direction;
