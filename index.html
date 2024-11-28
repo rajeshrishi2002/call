@@ -44,10 +44,7 @@
         <img src="sms.gif" alt="High Score GIF">
     </div>
 
-    <audio id="gameStartAudio" src="mamapayale.mp3" preload="auto"></audio>
-    <audio id="gameEndAudio" src="solluu.mp3" preload="auto"></audio>
-    <audio id="gameOverAudioLow" src="saavu.mp3" preload="auto"></audio>
-    <audio id="gameOverAudioHigh" src="summa.mp3" preload="auto"></audio>
+    <audio id="gameStartAudio" src="game1.m4a" preload="auto"></audio>
     <audio id="initAudio" src="start.m4a" preload="auto"></audio>
     <img id="footerImage" src="rkr.png" alt="Footer Image" style=" filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
 
@@ -266,8 +263,14 @@ function startGame() {
   lastTime = 0;
   stack = [];
   overhangs = [];
- 
-  gameStartAudio.play(); // Play the start audio
+
+  // Stop the initAudio (stop the sound when autopilot stops)
+  if (initAudio) {
+    initAudio.pause();  // Stop the audio
+    initAudio.currentTime = 0;  // Reset audio position to the beginning
+  }
+
+  gameStartAudio.play(); // Play the start audio when the game starts
   gameStarted = true;    // Flag that the game has started
 
   if (instructionsElement) instructionsElement.style.display = "none";
@@ -511,6 +514,7 @@ function missedTheSpot() {
       else if (score >= 30) {
         message = "nee vera level da";
       }
+
 
       // Set the message text
       dynamicText.innerHTML = message;
