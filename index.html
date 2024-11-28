@@ -46,7 +46,15 @@
 
     <audio id="gameStartAudio" src="game1.m4a" preload="auto"></audio>
     <audio id="initAudio" src="start.m4a" preload="auto"></audio>
+
+<audio id="scoreAudio1" src="game3.m4a" preload="auto"></audio>
+<audio id="scoreAudio2" src="game2.m4a" preload="auto"></audio>
+<audio id="scoreAudio3" src="vettri.m4a" preload="auto"></audio>
+<audio id="scoreAudio4" src="game4.m4a" preload="auto"></audio>
+
+
     <img id="footerImage" src="rkr.png" alt="Footer Image" style=" filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
+    <div id="paperBlast" class="paper-blast"></div>
 
 </body>
 <style>
@@ -66,6 +74,41 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
+/* Full-screen container */
+.paper-blast {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* Initially hidden */
+  z-index: 9999;
+  overflow: hidden;
+}
+
+/* Each paper piece */
+.paper-piece {
+  position: absolute;
+  width: 50px; /* Width of each paper piece */
+  height: 50px; /* Height of each paper piece */
+  background: url('point.png') no-repeat center center;
+  background-size: cover;
+  opacity: 1;
+  animation: blastEffect 2s forwards;
+}
+
+/* Animation for the paper blast */
+@keyframes blastEffect {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), var(--y)) rotate(var(--rotation)) scale(0.5);
+    opacity: 0;
+  }
+}
+
 
 #icon {
   position: absolute;
@@ -504,16 +547,79 @@ function missedTheSpot() {
       const score = stack.length - 1; // Adjust this based on your actual scoring system
 
       let message = '';
+
+// Function to create a realistic paper blast effect
+function showPaperBlast() {
+  const paperBlastElement = document.getElementById('paperBlast');
+  const numPieces = 150; // Number of paper pieces in the blast
+  paperBlastElement.innerHTML = ''; // Clear any existing pieces
+
+  // Create the paper pieces
+  for (let i = 0; i < numPieces; i++) {
+    const paperPiece = document.createElement('div');
+    paperPiece.classList.add('paper-piece');
+
+    // Set random positions and rotation
+    const randomX = Math.random() * 800 - 400;  // Random X translation between -400 and 400
+    const randomY = Math.random() * 800 - 400;  // Random Y translation between -400 and 400
+    const randomRotation = Math.random() * 360;  // Random rotation between 0 and 360 degrees
+
+    // Set custom CSS variables for animation
+    paperPiece.style.setProperty('--x', `${randomX}px`);
+    paperPiece.style.setProperty('--y', `${randomY}px`);
+    paperPiece.style.setProperty('--rotation', `${randomRotation}deg`);
+
+    // Append the paper piece to the paper-blast container
+    paperBlastElement.appendChild(paperPiece);
+  }
+
+  // Make the paper blast container visible
+  paperBlastElement.style.display = 'block';
+  
+  // Hide the paper blast container after the animation completes
+  setTimeout(() => {
+    paperBlastElement.style.display = 'none';
+  }, 2000);  // Duration should match the animation duration
+}
       if (score <= 20) {
-        message = "Reels,Shorts mattum nalla swipe pandra ithula panna theriyalaiye unaku";
-      } else if (score >= 21 && score <= 24) {
-        message = "super da nice try";
-      } else if (score >= 25 && score <= 29) {
-        message = "Hey semma da konjam try panni 30 aim pannu";
-      }
-      else if (score >= 30) {
-        message = "nee vera level da";
-      }
+  message = "Reels, Shorts mattum nalla swipe pandra ithula panna theriyalaiye unaku";
+  playAudio("scoreAudio1"); // Play audio for score 1-20
+
+}else if (score === 21) {
+  message = "Reels, Shorts mattum nalla swipe pandra ithula panna theriyalaiye unaku";
+  playAudio("scoreAudio1"); // Play audio for score 1-20
+}
+else if (score === 22) {
+  message = "super da nice try";
+  playAudio("scoreAudio2"); // Play audio for score 21-24
+}
+else if (score === 23) {
+  message = "super da nice try";
+  playAudio("scoreAudio2"); // Play audio for score 21-24
+} else if (score === 24) {
+  message = "super da nice try";
+  playAudio("scoreAudio2"); // Play audio for score 21-24
+} else if (score === 25) {
+  message = "Hey semma da konjam try panni 30 aim pannu";
+  playAudio("scoreAudio4"); // Play audio for score 25-29
+} else if (score === 26) {
+  message = "Hey semma da konjam try panni 30 aim pannu";
+  playAudio("scoreAudio4"); // Play audio for score 25-29
+} else if (score === 27) {
+  message = "Hey semma da konjam try panni 30 aim pannu";
+  playAudio("scoreAudio4"); // Play audio for score 25-29
+}
+else if (score === 28) {
+  message = "Hey semma da konjam try panni 30 aim pannu";
+  playAudio("scoreAudio4"); // Play audio for score 25-29
+} else if (score === 29) {
+  message = "Hey semma da konjam try panni 30 aim pannu";
+  playAudio("scoreAudio4"); // Play audio for score 25-29
+}else if (score >= 30) {
+  message = "nee vera level da,VETTRI VETTRI VETTRIMEL VETTRI";
+  playAudio("scoreAudio3"); // Play audio for score 30+
+  showPaperBlast(); // Trigger the paper blast effect when score is 30 or more
+} 
 
 
       // Set the message text
@@ -527,6 +633,26 @@ function missedTheSpot() {
     if (dynamicText) {
       dynamicText.style.display = "none";
     }
+  }
+}
+
+// Function to play the corresponding audio based on score range
+function playAudio(audioId) {
+  // Stop all audio elements first to ensure only the relevant audio plays
+  const audios = ["scoreAudio1", "scoreAudio2", "scoreAudio3", "scoreAudio4"];
+  audios.forEach(id => {
+    const audio = document.getElementById(id);
+    if (audio) {
+      audio.pause();  // Stop all audios
+      audio.currentTime = 0;  // Reset to the beginning
+    }
+  });
+
+  // Play the selected audio
+  const audio = document.getElementById(audioId);
+  if (audio) {
+    audio.play();  // Start playing the audio
+    audio.loop = true;  // Loop the audio until restart button is clicked
   }
 }
 
@@ -555,6 +681,16 @@ document.getElementById("restart-button").addEventListener("click", function() {
     dynamicText.style.display = "none"; // Hide the dynamic text
     dynamicText.innerHTML = ''; // Clear the dynamic text content
   }
+
+    // Stop the audio when the restart button is clicked
+    const audios = ["scoreAudio1", "scoreAudio2", "scoreAudio3", "scoreAudio4"];
+  audios.forEach(id => {
+    const audio = document.getElementById(id);
+    if (audio) {
+      audio.pause();  // Stop all audios
+      audio.currentTime = 0;  // Reset to the beginning
+    }
+  });
 
   // Restart the game
   startGame(); // Restart the game logic
