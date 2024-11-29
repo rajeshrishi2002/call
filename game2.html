@@ -132,7 +132,7 @@
 <body class="text-white h-screen flex flex-col" id="messageInput">
     <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
     <div class="flex items-center p-0">
-        <a href="index.html">
+        <a href="home.html">
             <img alt="Profile picture" id="profilePic" src="icon.png" style="margin-top: -25px; width:120px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
         </a>
     </div>
@@ -214,30 +214,30 @@
                 (neeChoice === 'paper' && hasiniChoice === 'paper2') ||
                 (neeChoice === 'scissors' && hasiniChoice === 'scissors2')
             ) {
-                message = "Tie";
+                message = "Tie da dei";
                 winner = "tie";
             } else if (neeChoice === 'stone' && hasiniChoice === 'paper2') {
-                message = "Hasini won";
+                message = "Hasini won😍";
                 winner = "hasini";
                 hasiniScore++;
             } else if (neeChoice === 'stone' && hasiniChoice === 'scissors2') {
-                message = "Nee thaan won";
+                message = "Nee thaan won🤩";
                 winner = "nee";
                 neeScore++;
             } else if (neeChoice === 'paper' && hasiniChoice === 'scissors2') {
-                message = "Hasini won";
+                message = "Hasini won😍";
                 winner = "hasini";
                 hasiniScore++;
             } else if (neeChoice === 'paper' && hasiniChoice === 'stone2') {
-                message = "Nee thaan won";
+                message = "Nee thaan won🤩";
                 winner = "nee";
                 neeScore++;
             } else if (neeChoice === 'scissors' && hasiniChoice === 'stone2') {
-                message = "Hasini won";
+                message = "Hasini won😍";
                 winner = "hasini";
                 hasiniScore++;
             } else if (neeChoice === 'scissors' && hasiniChoice === 'paper2') {
-                message = "Nee thaan won";
+                message = "Nee thaan won🤩";
                 winner = "nee";
                 neeScore++;
             }
@@ -263,10 +263,10 @@
             }
 
             if (continuousWins >= 3) {
-                resultMessage.textContent = "Kumara, you can do it!";
+                resultMessage.textContent = "Kumara, you can do it😀";
                 new Audio('kumara_you_can_do_it.mp3').play();
             } else if (continuousLosses >= 2) {
-                resultMessage.textContent = "Thothute irukiyeda!";
+                resultMessage.textContent = "Thothute irukiyeda🤕";
                 new Audio('thothute_irukiyeda.mp3').play();
             } else {
                 resultMessage.textContent = message;
@@ -274,12 +274,12 @@
 
             // Game Over logic
             if (hasiniScore === 10) {
-                resultMessage.textContent = "Game mudinchi! Hasini won!";
+                resultMessage.textContent = "Game mudinchi! Hasini won😍";
                 new Audio('game_over_hasini.mp3').play();
                 showPaperBlast(); // Trigger paper blast
                 resetGame();
             } else if (neeScore === 10) {
-                resultMessage.textContent = "Game mudinchi! Nee won!";
+                resultMessage.textContent = "Game mudinchi! Nee won🤩";
                 new Audio('game_over_nee.mp3').play();
                 showPaperBlast(); // Trigger paper blast
                 resetGame();
