@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Solluu</title>
+    <link rel="preload" href="b1.jpeg" as="image">
+    <link rel="preload" href="dp.gif" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/4.0.1/wavesurfer.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('b1.jpeg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Pacifico', cursive;
+        }
+        .blur-background {
+            filter: blur(2px);
+        }
+        #footerImage {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 1;
+            width: 60px;
+        }
+        .game-container {
+            text-align: center;
+            color: white;
+            margin-top: 90px;
+        }
+        .player-container {
+            display: flex;
+            justify-content: space-evenly;
+            width: 100%;
+            align-items: center;
+        }
+        .player {
+            margin: 20px;
+        }
+        .player-name {
+            font-size: 34px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 148, 193, 1), 0 0 20px rgba(255, 148, 193, 1);
+        }
+        .score {
+            font-size: 30px;
+            text-shadow: 0 0 10px rgba(255, 148, 193, 1), 0 0 20px rgba(255, 148, 193, 1);
+        }
+        .player-gif {
+            filter: drop-shadow(0 0 10px rgba(251, 165, 212, 0.527)) hue-rotate(334deg) contrast(1.5);
+        }
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .action-button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #ffbad7 30%,  #f84da2 50%, #470020 100%);
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .action-button:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #ffbad7 3%, #e50776 80%);
+            transform: scale(1.2); }
+        #resultMessage {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 50px;
+            text-shadow: 0 0 10px rgba(255, 148, 193, 1), 0 0 20px rgba(255, 148, 193, 1);
+
+        }
+        #resultScore {
+            font-size: 22px;
+            margin-top: 10px;
+        }
+
+        /* Full-screen container for paper blast */
+        .paper-blast {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none; /* Initially hidden */
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        /* Each paper piece */
+        .paper-piece {
+            position: absolute;
+            width: 50px; /* Width of each paper piece */
+            height: 50px; /* Height of each paper piece */
+            background: url('point.png') no-repeat center center;
+            background-size: cover;
+            opacity: 1;
+            animation: blastEffect 2s forwards;
+        }
+
+        /* Animation for the paper blast */
+        @keyframes blastEffect {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) rotate(var(--rotation)) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+    </style>
+</head>
+<body class="text-white h-screen flex flex-col" id="messageInput">
+    <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
+    <div class="flex items-center p-0">
+        <a href="home.html">
+            <img alt="Profile picture" id="profilePic" src="icon.png" style="margin-top: -25px; width:120px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+        </a>
+    </div>
+    <div class="game-container">
+        <div class="player-container">
+            <!-- Hasini -->
+            <div class="player">
+                <div class="player-name">Hasini</div>
+                <div class="score" id="hasiniScore">Score: 0</div>
+                <div class="player-gif">
+                    <img id="hasiniGif" src="start.gif" alt="Hasini's Initial GIF" width="200">
+                </div>
+            </div>
+
+            <!-- Nee -->
+            <div class="player">
+                <div class="player-name">Nee</div>
+                <div class="score" id="neeScore">Score: 0</div>
+                <div class="player-gif">
+                    <img id="neeGif" src="start2.gif" alt="Nee's Initial GIF" width="200">
+                </div>
+            </div>
+        </div>
+        <!-- Buttons for actions -->
+        <div class="button-container">
+            <button class="action-button" onclick="changeGif('stone')">Stone</button>
+            <button class="action-button" onclick="changeGif('paper')">Paper</button>
+            <button class="action-button" onclick="changeGif('scissors')">Scissors</button>
+        </div>
+        <!-- Result and Score Text -->
+        <div id="resultMessage"></div>
+        <div id="resultScore"></div>
+    </div>
+
+    <!-- Paper blast effect -->
+    <div class="paper-blast" id="paperBlast">
+        <!-- Paper pieces will be generated here -->
+    </div>
+
+    <script>
+        let hasiniScore = 0;
+        let neeScore = 0;
+        let previousNeeResult = null; // Track previous result for "Nee"
+        let continuousLosses = 0;
+        let continuousWins = 0;
+        let audioPlayed = false;
+
+        function changeGif(choice) {
+            // If game is over, prevent any more actions
+            if (hasiniScore === 10 || neeScore === 10) {
+                return;
+            }
+
+            // Change Nee's GIF based on the button clicked
+            const neeGif = document.getElementById('neeGif');
+            neeGif.src = choice + '.gif'; // Updates the src to the selected choice (stone.gif, paper.gif, scissors.gif)
+
+            // Randomly change Hasini's GIF to stone2.gif, paper2.gif, or scissors2.gif
+            const hasiniGif = document.getElementById('hasiniGif');
+            const randomChoice = ['stone2', 'paper2', 'scissors2'];
+            const randomGif = randomChoice[Math.floor(Math.random() * randomChoice.length)];
+            hasiniGif.src = randomGif + '.gif'; // Randomly set Hasini's GIF
+
+            // Delay logic to update scores and display result
+            setTimeout(function() {
+                handleGameResult(choice, randomGif);
+            }, 1000);
+        }
+
+        function handleGameResult(neeChoice, hasiniChoice) {
+            const resultMessage = document.getElementById('resultMessage');
+            const resultScore = document.getElementById('resultScore');
+            let message = "";
+            let winner = "";
+
+            // Check for a tie
+            if (
+                (neeChoice === 'stone' && hasiniChoice === 'stone2') ||
+                (neeChoice === 'paper' && hasiniChoice === 'paper2') ||
+                (neeChoice === 'scissors' && hasiniChoice === 'scissors2')
+            ) {
+                message = "Tie";
+                winner = "tie";
+            } else if (neeChoice === 'stone' && hasiniChoice === 'paper2') {
+                message = "Hasini won";
+                winner = "hasini";
+                hasiniScore++;
+            } else if (neeChoice === 'stone' && hasiniChoice === 'scissors2') {
+                message = "Nee thaan won";
+                winner = "nee";
+                neeScore++;
+            } else if (neeChoice === 'paper' && hasiniChoice === 'scissors2') {
+                message = "Hasini won";
+                winner = "hasini";
+                hasiniScore++;
+            } else if (neeChoice === 'paper' && hasiniChoice === 'stone2') {
+                message = "Nee thaan won";
+                winner = "nee";
+                neeScore++;
+            } else if (neeChoice === 'scissors' && hasiniChoice === 'stone2') {
+                message = "Hasini won";
+                winner = "hasini";
+                hasiniScore++;
+            } else if (neeChoice === 'scissors' && hasiniChoice === 'paper2') {
+                message = "Nee thaan won";
+                winner = "nee";
+                neeScore++;
+            }
+
+            // Display result
+            document.getElementById('hasiniScore').textContent = "Score: " + hasiniScore;
+            document.getElementById('neeScore').textContent = "Score: " + neeScore;
+
+            // Display message based on the winner
+            if (winner !== "tie") {
+                new Audio(winner === "nee" ? 'nee_win.mp3' : 'hasini_win.mp3').play();
+            } else {
+                new Audio('tie.mp3').play();
+            }
+
+            // Continuous win/loss tracking
+            if (winner === 'nee') {
+                continuousWins++;
+                continuousLosses = 0;
+            } else if (winner === 'hasini') {
+                continuousLosses++;
+                continuousWins = 0;
+            }
+
+            if (continuousWins >= 3) {
+                resultMessage.textContent = "Kumara, you can do it!";
+                new Audio('kumara_you_can_do_it.mp3').play();
+            } else if (continuousLosses >= 2) {
+                resultMessage.textContent = "Thothute irukiyeda!";
+                new Audio('thothute_irukiyeda.mp3').play();
+            } else {
+                resultMessage.textContent = message;
+            }
+
+            // Game Over logic
+            if (hasiniScore === 10) {
+                resultMessage.textContent = "Game mudinchi! Hasini won!";
+                new Audio('game_over_hasini.mp3').play();
+                showPaperBlast(); // Trigger paper blast
+                resetGame();
+            } else if (neeScore === 10) {
+                resultMessage.textContent = "Game mudinchi! Nee won!";
+                new Audio('game_over_nee.mp3').play();
+                showPaperBlast(); // Trigger paper blast
+                resetGame();
+            }
+
+        }
+
+        // Function to show paper blast animation
+        function showPaperBlast() {
+            const paperBlast = document.getElementById('paperBlast');
+            paperBlast.style.display = 'block';
+
+            // Create multiple paper pieces
+            for (let i = 0; i < 60; i++) {
+                const paperPiece = document.createElement('div');
+                paperPiece.classList.add('paper-piece');
+
+                // Set random position and movement
+                paperPiece.style.left = `${window.innerWidth / 2}px`;
+                paperPiece.style.top = `${window.innerHeight / 2}px`;
+
+                // Set random direction for paper pieces to travel
+                const angle = Math.random() * 360;
+                const distance = Math.random() * 200 + 100;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                paperPiece.style.setProperty('--x', `${x}px`);
+                paperPiece.style.setProperty('--y', `${y}px`);
+                paperPiece.style.setProperty('--rotation', `${Math.random() * 360}deg`);
+
+                paperBlast.appendChild(paperPiece);
+
+                // Remove paper piece after animation
+                setTimeout(function() {
+                    paperPiece.remove();
+                }, 4000);
+            }
+        }
+
+        // Reset the game once it's over
+        function resetGame() {
+            // Reset GIFs
+            document.getElementById('neeGif').src = 'start2.gif';
+            document.getElementById('hasiniGif').src = 'start.gif';
+
+            // Disable buttons
+            const buttons = document.querySelectorAll('.action-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+    </script>
+</body>
+</html>
