@@ -173,122 +173,162 @@
     </div>
 
     <script>
-        let hasiniScore = 0;
-        let neeScore = 0;
-        let previousNeeResult = null; // Track previous result for "Nee"
-        let continuousLosses = 0;
-        let continuousWins = 0;
-        let audioPlayed = false;
+let hasiniScore = 0;
+let neeScore = 0;
+let continuousLosses = 0;
+let continuousWins = 0;
+let neeConsecutiveWins = 0; // Track consecutive wins by "Nee"
 
-        function changeGif(choice) {
-            // If game is over, prevent any more actions
-            if (hasiniScore === 10 || neeScore === 10) {
-                return;
-            }
+let audioPlaying = false;  // Variable to track if audio is playing
 
-            // Change Nee's GIF based on the button clicked
-            const neeGif = document.getElementById('neeGif');
-            neeGif.src = choice + '.gif'; // Updates the src to the selected choice (stone.gif, paper.gif, scissors.gif)
+// Function to play audio and control button state
+function playAudioAndControlButtons(audioSrc) {
+    // Disable buttons while audio is playing
+    const buttons = document.querySelectorAll('.action-button');
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
 
-            // Randomly change Hasini's GIF to stone2.gif, paper2.gif, or scissors2.gif
-            const hasiniGif = document.getElementById('hasiniGif');
-            const randomChoice = ['stone2', 'paper2', 'scissors2'];
-            const randomGif = randomChoice[Math.floor(Math.random() * randomChoice.length)];
-            hasiniGif.src = randomGif + '.gif'; // Randomly set Hasini's GIF
+    // Play the audio
+    const audio = new Audio(audioSrc);
+    audio.play();
 
-            // Delay logic to update scores and display result
-            setTimeout(function() {
-                handleGameResult(choice, randomGif);
-            }, 1000);
-        }
+    // When audio ends, re-enable buttons
+    audio.onended = function() {
+        buttons.forEach(button => {
+            button.disabled = false; // Enable buttons after audio ends
+        });
+        audioPlaying = false;  // Reset audio playing flag
+    };
+}
 
-        function handleGameResult(neeChoice, hasiniChoice) {
-            const resultMessage = document.getElementById('resultMessage');
-            const resultScore = document.getElementById('resultScore');
-            let message = "";
-            let winner = "";
+function changeGif(choice) {
+    // If game is over, prevent any more actions
+    if (hasiniScore === 10 || neeScore === 10 || audioPlaying) {
+        return; // Prevent action if audio is playing
+    }
 
-            // Check for a tie
-            if (
-                (neeChoice === 'stone' && hasiniChoice === 'stone2') ||
-                (neeChoice === 'paper' && hasiniChoice === 'paper2') ||
-                (neeChoice === 'scissors' && hasiniChoice === 'scissors2')
-            ) {
-                message = "Tie da dei";
-                winner = "tie";
-            } else if (neeChoice === 'stone' && hasiniChoice === 'paper2') {
-                message = "Hasini won😍";
-                winner = "hasini";
-                hasiniScore++;
-            } else if (neeChoice === 'stone' && hasiniChoice === 'scissors2') {
-                message = "Nee thaan won🤩";
-                winner = "nee";
-                neeScore++;
-            } else if (neeChoice === 'paper' && hasiniChoice === 'scissors2') {
-                message = "Hasini won😍";
-                winner = "hasini";
-                hasiniScore++;
-            } else if (neeChoice === 'paper' && hasiniChoice === 'stone2') {
-                message = "Nee thaan won🤩";
-                winner = "nee";
-                neeScore++;
-            } else if (neeChoice === 'scissors' && hasiniChoice === 'stone2') {
-                message = "Hasini won😍";
-                winner = "hasini";
-                hasiniScore++;
-            } else if (neeChoice === 'scissors' && hasiniChoice === 'paper2') {
-                message = "Nee thaan won🤩";
-                winner = "nee";
-                neeScore++;
-            }
+    // Change Nee's GIF based on the button clicked
+    const neeGif = document.getElementById('neeGif');
+    neeGif.src = choice + '.gif'; // Updates the src to the selected choice (stone.gif, paper.gif, scissors.gif)
 
-            // Display result
-            document.getElementById('hasiniScore').textContent = "Score: " + hasiniScore;
-            document.getElementById('neeScore').textContent = "Score: " + neeScore;
+    // Randomly change Hasini's GIF to stone2.gif, paper2.gif, or scissors2.gif
+    const hasiniGif = document.getElementById('hasiniGif');
+    const randomChoice = ['stone2', 'paper2', 'scissors2'];
+    const randomGif = randomChoice[Math.floor(Math.random() * randomChoice.length)];
+    hasiniGif.src = randomGif + '.gif'; // Randomly set Hasini's GIF
 
-            // Display message based on the winner
-            if (winner !== "tie") {
-                new Audio(winner === "nee" ? 'nee_win.mp3' : 'hasini_win.mp3').play();
+    // Delay logic to update scores and display result
+    setTimeout(function() {
+        handleGameResult(choice, randomGif);
+    }, 1000);
+}
+function handleGameResult(neeChoice, hasiniChoice) {
+    const resultMessage = document.getElementById('resultMessage');
+    const resultScore = document.getElementById('resultScore');
+    let message = "";
+    let winner = "";
+
+    // Check for a tie
+    if (
+        (neeChoice === 'stone' && hasiniChoice === 'stone2') ||
+        (neeChoice === 'paper' && hasiniChoice === 'paper2') ||
+        (neeChoice === 'scissors' && hasiniChoice === 'scissors2')
+    ) {
+        message = "Tie da dei";
+        winner = "tie";
+    } else if (neeChoice === 'stone' && hasiniChoice === 'paper2') {
+        message = "Hasini won😍";
+        winner = "hasini";
+        hasiniScore++;
+    } else if (neeChoice === 'stone' && hasiniChoice === 'scissors2') {
+        message = "Nee thaan won🤩";
+        winner = "nee";
+        neeScore++;
+    } else if (neeChoice === 'paper' && hasiniChoice === 'scissors2') {
+        message = "Hasini won😍";
+        winner = "hasini";
+        hasiniScore++;
+    } else if (neeChoice === 'paper' && hasiniChoice === 'stone2') {
+        message = "Nee thaan won🤩";
+        winner = "nee";
+        neeScore++;
+    } else if (neeChoice === 'scissors' && hasiniChoice === 'stone2') {
+        message = "Hasini won😍";
+        winner = "hasini";
+        hasiniScore++;
+    } else if (neeChoice === 'scissors' && hasiniChoice === 'paper2') {
+        message = "Nee thaan won🤩";
+        winner = "nee";
+        neeScore++;
+    }
+
+    // Display result
+    document.getElementById('hasiniScore').textContent = "Score: " + hasiniScore;
+    document.getElementById('neeScore').textContent = "Score: " + neeScore;
+
+    // Check if a tie occurred before handling other cases
+    if (winner === "tie") {
+        resultMessage.textContent = message; // Show tie message
+        return; // Exit the function here if it's a tie
+    }
+
+    // If the winner is not a tie, handle the winner
+    if (winner !== "tie") {
+        // Handle the consecutive wins of "Nee"
+        if (winner === "nee") {
+            if (neeConsecutiveWins === 0) {
+                playAudioAndControlButtons('parah.mp3'); // Play audio and disable buttons
+            } else if (neeConsecutiveWins === 1) {
+                // Only play vaamacha.mp3 if the winner is "nee" and 2 consecutive wins have been achieved
+                resultMessage.textContent = "vaa macha vaa macha😀";
             } else {
-                new Audio('tie.mp3').play();
+                resultMessage.textContent = "vaa macha vaa macha😀";
+                playAudioAndControlButtons('vaamacha.mp3'); // Play third consecutive win audio
             }
-
-            // Continuous win/loss tracking
-            if (winner === 'nee') {
-                continuousWins++;
-                continuousLosses = 0;
-            } else if (winner === 'hasini') {
-                continuousLosses++;
-                continuousWins = 0;
-            }
-
-            if (continuousWins >= 3) {
-                resultMessage.textContent = "Kumara, you can do it😀";
-                new Audio('kumara_you_can_do_it.mp3').play();
-            } else if (continuousLosses >= 2) {
-                resultMessage.textContent = "Thothute irukiyeda🤕";
-                new Audio('thothute_irukiyeda.mp3').play();
-            } else {
-                resultMessage.textContent = message;
-            }
-
-            // Game Over logic
-            if (hasiniScore === 10) {
-                resultMessage.textContent = "Game mudinchi! Hasini won😍";
-                new Audio('game_over_hasini.mp3').play();
-                showPaperBlast(); // Trigger paper blast
-                resetGame();
-            } else if (neeScore === 10) {
-                resultMessage.textContent = "Game mudinchi! Nee won🤩";
-                new Audio('game_over_nee.mp3').play();
-                showPaperBlast(); // Trigger paper blast
-                resetGame();
-            }
-
+            neeConsecutiveWins++; // Increment consecutive wins counter
+        } else {
+            playAudioAndControlButtons('hasiniwon.mp3');
+            neeConsecutiveWins = 0; // Reset consecutive wins if "Nee" loses
         }
+    }
 
-        // Function to show paper blast animation
-        function showPaperBlast() {
+    // Continuous win/loss tracking
+    if (winner === 'nee') {
+        continuousWins++;
+        continuousLosses = 0;
+    } else if (winner === 'hasini') {
+        continuousLosses++;
+        continuousWins = 0;
+    }
+
+    // Play different audio if continuous wins reach a certain number
+    if (continuousWins >= 3) {
+        // You can add custom audio for 3+ consecutive wins if needed.
+    } else if (continuousLosses >= 2) {
+        resultMessage.textContent = "Thothute irukiyeda🤕";
+        playAudioAndControlButtons('thotute.mp3'); // Only play thotute.mp3 for continuous losses
+    } else {
+        resultMessage.textContent = message;
+    }
+
+    // Game Over logic
+    if (hasiniScore === 10) {
+        resultMessage.textContent = "Game mudinchi! Hasini won😍";
+        playAudioAndControlButtons('jei.mp3');
+        showPaperBlast(); // Trigger paper blast
+        resetGame();
+    } else if (neeScore === 10) {
+        resultMessage.textContent = "Game mudinchi! Nee won🤩";
+        playAudioAndControlButtons('jei.mp3');
+        showPaperBlast(); // Trigger paper blast
+        resetGame();
+    }
+}
+
+
+ // Function to show paper blast animation
+ function showPaperBlast() {
             const paperBlast = document.getElementById('paperBlast');
             paperBlast.style.display = 'block';
 
@@ -318,19 +358,22 @@
                 }, 4000);
             }
         }
+// Function to reset the game when it's over
+function resetGame() {
+    // Reset GIFs
+    document.getElementById('neeGif').src = 'start2.gif';
+    document.getElementById('hasiniGif').src = 'start.gif';
 
-        // Reset the game once it's over
-        function resetGame() {
-            // Reset GIFs
-            document.getElementById('neeGif').src = 'start2.gif';
-            document.getElementById('hasiniGif').src = 'start.gif';
+    // Disable buttons
+    const buttons = document.querySelectorAll('.action-button');
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
 
-            // Disable buttons
-            const buttons = document.querySelectorAll('.action-button');
-            buttons.forEach(button => {
-                button.disabled = true;
-            });
-        }
+    // Reset the consecutive wins counter for "Nee"
+    neeConsecutiveWins = 0;
+}
+
     </script>
 </body>
 </html>
