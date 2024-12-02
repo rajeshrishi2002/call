@@ -405,7 +405,7 @@ body {
   width: 100vw;
   height: 100vh;
   color: #fff;
-  background-color: rgba(65, 145, 151, 0.5);
+  background-color: rgba(0, 0, 0, 0.284);
   text-align: center;
   text-transform: uppercase;
 }
@@ -413,22 +413,20 @@ body {
   display: flex;
 }
 .over-text--lose {
-  color: #000038;
-  background-color: rgba(255, 125, 102, 0.5);
+  color: #ffffff;
 }
 .over-text--win {
   display: flex;
   flex-direction: column;
   font-size: 10vw;
-  color: #12486b;
-  background-color: rgba(245, 252, 205, 0.5);
+  color: #ffffff;
 }
 .over-text--win .over-text__timer {
   font-size: 5vw;
 }
 .over-text--tutorial {
-  color: #12486b;
-  background: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.325);
   top: unset;
   bottom: 0;
   height: 4rem;
@@ -492,102 +490,6 @@ body {
   border-right: 1rem solid transparent;
 }
 
-.intro {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  height: 100vh;
-  padding: 1rem;
-  color: #fff07f;
-  background-color: #419197;
-  cursor: pointer;
-}
-.intro__title {
-  font-size: 4rem;
-}
-.intro__subtitle {
-  color: #f5fccd;
-}
-.intro__explanation {
-  position: absolute;
-  bottom: 3rem;
-  left: 1rem;
-  width: calc(100vw - 2rem);
-  font-size: 1.5rem;
-  text-align: right;
-  color: #fff;
-}
-.intro__player {
-  position: absolute;
-  top: 10rem;
-  right: 0;
-  width: 40vw;
-  height: 40vh;
-  transform: rotate(10deg);
-}
-.intro__button {
-  position: absolute;
-  bottom: 30vh;
-  left: 40vw;
-  display: inline-flex;
-  justify-content: center;
-  width: 20vw;
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  color: #12486b;
-  background: #fff07f;
-  outline: 2px solid #12486b;
-  transition: transform 0.2s ease;
-}
-.intro__button:hover {
-  transform: scale(1.2);
-}
-.intro__earth {
-  position: absolute;
-  top: 30vh;
-  left: 15vw;
-  width: 70vw;
-  height: 70vw;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ffb1d3 0%, #f73f9b 30%, #89003e 100%);
-  transform: rotate(10deg);
-  overflow: hidden;
-  filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));
-}
-@media (max-width: 767px) {
-  .intro__earth {
-    width: 120vw;
-    height: 120vw;
-    left: -10vw;
-  }
-}
-.intro__earth:before {
-  content: "";
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: url("https://www.pedro-ondiviela.com/assets/map.svg");
-  background-size: cover;
-  transition: background-position 0.5s ease;
-  animation: globeSpinning;
-  animation-duration: 300s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-}
-@keyframes globeSpinning {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 288% 0;
-  }
-}
-.intro--hidden {
-  display: none;
-}
 
 .level-selector {
   position: absolute;
@@ -1640,13 +1542,7 @@ document.addEventListener(
     if (storedLevel) {
       level = Number(storedLevel);
       buildLevelSelector();
-    } else {
-      overText.classList.add("over-text--display");
-      overText.classList.add("over-text--tutorial");
-      overText.addEventListener("click", removeTutorial);
-      overText.innerHTML =
-        "";
-    }
+    } 
     // Init
     buildLevel();
     positionPlayer();
