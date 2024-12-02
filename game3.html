@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Solluut</title>
+  <title>Document</title>
 </head>
 <body>
   <div id="game" class="game">
   </div>
-  
-  <div class="title">DUCKY<br />FOG</div>
-  
+  <img id="icon" src="icon.png" alt="Icon" style="position: absolute; top: 0; left: 0; margin-top: -25px; width: 120px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+
+  <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1)); width: 60px;">
+
   <div id="level-text" class="level-text">0</div>
   
   <div id="water-level" class="water-level"></div>
@@ -21,14 +22,6 @@
     <div id="right" class="controls__arrow controls__arrow--right"></div>
     <div id="bottom" class="controls__arrow controls__arrow--bottom"></div>
   </div>
-  
-  <div id="fullscreen" class="fullscreen"><svg fill="#FFF" width="1.3rem" height="1.3rem" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-      <path d="M14 3.414L9.414 8 14 12.586v-2.583h2V16h-6v-1.996h2.59L8 9.414l-4.59 4.59H6V16H0v-5.997h2v2.583L6.586 8 2 3.414v2.588H0V0h16v6.002h-2V3.414zm-1.415-1.413H10V0H6v2H3.415L8 6.586 12.585 2z" fill-rule="evenodd" />
-    </svg></div>
-  
-  <div id="refresh" class="refresh"><svg fill="#fff" width="2rem" height="2rem" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-      <path d="M27.1 14.313V5.396L24.158 8.34c-2.33-2.325-5.033-3.503-8.11-3.503C9.902 4.837 4.901 9.847 4.899 16c.001 6.152 5.003 11.158 11.15 11.16 4.276 0 9.369-2.227 10.836-8.478l.028-.122h-3.23l-.022.068c-1.078 3.242-4.138 5.421-7.613 5.421a8 8 0 0 1-5.691-2.359A7.993 7.993 0 0 1 8 16.001c0-4.438 3.611-8.049 8.05-8.049 2.069 0 3.638.58 5.924 2.573l-3.792 3.789H27.1z" />
-    </svg></div>
   
   <div id="over-text" class="over-text"></div>
   
@@ -92,7 +85,13 @@ html {
     font-size: 2.9vw;
   }
 }
-
+#footerImage {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 1;
+        }
 body {
   margin: 0;
   padding: 0;
@@ -381,6 +380,9 @@ body {
   position: absolute;
   top: 1rem;
   right: 1rem;
+  color: #ffffff;
+  filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));
+  font-size: 35px;
 }
 .level-text:before {
   position: absolute;
@@ -580,6 +582,7 @@ body {
   background: linear-gradient(135deg, #ffb1d3 0%, #f73f9b 30%, #89003e 100%);
   transform: rotate(10deg);
   overflow: hidden;
+  filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));
 }
 @media (max-width: 767px) {
   .intro__earth {
@@ -613,20 +616,6 @@ body {
   display: none;
 }
 
-.fullscreen {
-  position: absolute;
-  top: 1.2rem;
-  right: 7rem;
-  cursor: pointer;
-}
-
-.refresh {
-  position: absolute;
-  top: 1rem;
-  right: 4rem;
-  cursor: pointer;
-}
-
 .level-selector {
   position: absolute;
   top: 0;
@@ -638,6 +627,7 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
   font-size: 2rem;
   display: none;
+  
 }
 @media (min-height: 600px) {
   .level-selector {
@@ -662,6 +652,7 @@ body {
 }
 .level-selector__button--current {
   background: linear-gradient(135deg, #ffb1d3 0%, #f73f9b 30%, #89003e 100%);
+  filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));
 }
 .level-selector__button--disabled {
   opacity: 0.5;
