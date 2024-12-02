@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>JS Candy Crush</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="scoreBoard">
+      <h3>score</h3>
+      <h1 id="score"></h1>
+    </div>
+    <div class="grid"></div>
+  </body>
+  <style>
+  body {
+  margin: 0;
+  padding: 0;
+  background-image: url('b1.jpeg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh; /* Use min-height instead of height */
+  position: relative;
+}
+
+
+
+    h3, h1 {
+      margin: 0;
+    }
+
+    h3 {
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr); /* Create 8 columns */
+      grid-template-rows: repeat(7, 1fr); /* Create 8 rows */
+      gap: 5px;
+      justify-items: center;
+      border-radius: 10px;
+      padding: 5px;
+      max-width: 90%;
+      aspect-ratio: 1; /* Maintain square aspect ratio */
+    }
+
+    .grid div {
+      height: 50px;
+      width: 50px;
+      background-size: cover;
+      border-radius: 5px;
+    }
+
+    /* Mobile View Adjustments */
+    @media screen and (max-width: 768px) {
+      .grid {
+        width: 50vw; /* Use 90% of viewport width */
+        aspect-ratio: 1; /* Maintain square aspect ratio */
+      }
+
+      .grid div {
+        height: 60px;
+        width: 60px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      .scoreBoard {
+        width: 90%;
+        margin-left: 5%;
+        height: 100px;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .grid {
+        width: 55vw; /* Use 95% of viewport width for even smaller screens */
+        aspect-ratio: 1; /* Maintain square aspect ratio */
+      }
+
+      .grid div {
+        height: 50px;
+        width: 50px;
+      }
+
+      .scoreBoard {
+        width: 95%;
+        margin-left: 2.5%;
+        height: 90px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    candyCrushGame();
+});
+
+function candyCrushGame() {
+    const grid = document.querySelector(".grid");
+    const scoreDisplay = document.getElementById("score");
+    const width = 7;
+    const squares = [];
+    let score = 0;
+
+    const candyColors = [
+        "url(https://raw.githubusercontent.com/arpit456jain/Amazing-Js-Projects/master/Candy%20Crush/utils/red-candy.png)",
+        "url(https://raw.githubusercontent.com/arpit456jain/Amazing-Js-Projects/master/Candy%20Crush/utils/blue-candy.png)",
+        "url(https://raw.githubusercontent.com/arpit456jain/Amazing-Js-Projects/master/Candy%20Crush/utils/green-candy.png)",
+        "url(https://raw.githubusercontent.com/arpit456jain/Amazing-Js-Projects/master/Candy%20Crush/utils/yellow-candy.png)",
+        "url(https://raw.githubusercontent.com/arpit456jain/Amazing-Js-Projects/master/Candy%20Crush/utils/orange-candy.png)",
+        "url(https://raw.githubusercontent.com/arpit456jain/Amazing-Js-Projects/master/Candy%20Crush/utils/purple-candy.png)",
+    ];
+
+    // Creating Game Board
+    function createBoard() {
+        for (let i = 0; i < width * width; i++) {
+            const square = document.createElement("div");
+            square.setAttribute("draggable", true);
+            square.setAttribute("id", i);
+            let randomColor = Math.floor(Math.random() * candyColors.length);
+            square.style.backgroundImage = candyColors[randomColor];
+            grid.appendChild(square);
+            squares.push(square);
+        }
+    }
+    createBoard();
+
+    // Dragging the Candy
+    let colorBeingDragged;
+    let colorBeingReplaced;
+    let squareIdBeingDragged;
+    let squareIdBeingReplaced;
+
+    squares.forEach((square) =>
+        square.addEventListener("dragstart", dragStart)
+    );
+    squares.forEach((square) => square.addEventListener("dragend", dragEnd));
+    squares.forEach((square) => square.addEventListener("dragover", dragOver));
+    squares.forEach((square) =>
+        square.addEventListener("dragenter", dragEnter)
+    );
+    squares.forEach((square) =>
+        square.addEventListener("drageleave", dragLeave)
+    );
+    squares.forEach((square) => square.addEventListener("drop", dragDrop));
+
+    function dragStart() {
+        colorBeingDragged = this.style.backgroundImage;
+        squareIdBeingDragged = parseInt(this.id);
+    }
+
+    function dragOver(e) {
+        e.preventDefault();
+    }
+
+    function dragEnter(e) {
+        e.preventDefault();
+    }
+
+    function dragLeave() {
+        this.style.backgroundImage = "";
+    }
+
+    function dragDrop() {
+        colorBeingReplaced = this.style.backgroundImage;
+        squareIdBeingReplaced = parseInt(this.id);
+        this.style.backgroundImage = colorBeingDragged;
+        squares[
+            squareIdBeingDragged
+        ].style.backgroundImage = colorBeingReplaced;
+    }
+
+    function dragEnd() {
+        let validMoves = [
+            squareIdBeingDragged - 1,
+            squareIdBeingDragged - width,
+            squareIdBeingDragged + 1,
+            squareIdBeingDragged + width
+        ];
+        let validMove = validMoves.includes(squareIdBeingReplaced);
+
+        if (squareIdBeingReplaced && validMove) {
+            squareIdBeingReplaced = null;
+        } else if (squareIdBeingReplaced && !validMove) {
+            squares[
+                squareIdBeingReplaced
+            ].style.backgroundImage = colorBeingReplaced;
+            squares[
+                squareIdBeingDragged
+            ].style.backgroundImage = colorBeingDragged;
+        } else
+            squares[
+                squareIdBeingDragged
+            ].style.backgroundImage = colorBeingDragged;
+    }
+
+    function moveIntoSquareBelow() {
+        for (i = 0; i < 55; i++) {
+            if (squares[i + width].style.backgroundImage === "") {
+                squares[i + width].style.backgroundImage =
+                    squares[i].style.backgroundImage;
+                squares[i].style.backgroundImage = "";
+                const firstRow = [0, 1, 2, 3, 4, 5, 6, 7];
+                const isFirstRow = firstRow.includes(i);
+                if (isFirstRow && squares[i].style.backgroundImage === "") {
+                    let randomColor = Math.floor(
+                        Math.random() * candyColors.length
+                    );
+                    squares[i].style.backgroundImage = candyColors[randomColor];
+                }
+            }
+        }
+    }
+
+    function checkRowForFour() {
+        for (i = 0; i < 60; i++) {
+            let rowOfFour = [i, i + 1, i + 2, i + 3];
+            let decidedColor = squares[i].style.backgroundImage;
+            const isBlank = squares[i].style.backgroundImage === "";
+
+            const notValid = [
+                5,
+                6,
+                7,
+                13,
+                14,
+                15,
+                21,
+                22,
+                23,
+                29,
+                30,
+                31,
+                37,
+                38,
+                39,
+                45,
+                46,
+                47,
+                 53,
+                54,
+                55
+            ];
+            if (notValid.includes(i)) continue;
+
+            if (
+                rowOfFour.every(
+                    (index) =>
+                        squares[index].style.backgroundImage === decidedColor &&
+                        !isBlank
+                )
+            ) {
+                score += 4;
+                scoreDisplay.innerHTML = score;
+                rowOfFour.forEach((index) => {
+                    squares[index].style.backgroundImage = "";
+                });
+            }
+        }
+    }
+    checkRowForFour();
+
+    function checkColumnForFour() {
+        for (i = 0; i < 39; i++) {
+            let columnOfFour = [i, i + width, i + width * 2, i + width * 3];
+            let decidedColor = squares[i].style.backgroundImage;
+            const isBlank = squares[i].style.backgroundImage === "";
+
+            if (
+                columnOfFour.every(
+                    (index) =>
+                        squares[index].style.backgroundImage === decidedColor &&
+                        !isBlank
+                )
+            ) {
+                score += 4;
+                scoreDisplay.innerHTML = score;
+                columnOfFour.forEach((index) => {
+                    squares[index].style.backgroundImage = "";
+                });
+            }
+        }
+    }
+    checkColumnForFour();
+
+    function checkRowForThree() {
+        for (i = 0; i < 61; i++) {
+            let rowOfThree = [i, i + 1, i + 2];
+            let decidedColor = squares[i].style.backgroundImage;
+            const isBlank = squares[i].style.backgroundImage === "";
+
+            const notValid = [
+                6,
+                7,
+                14,
+                15,
+                22,
+                23,
+                30,
+                31,
+                38,
+                39,
+                46,
+                47,
+                54,
+                55
+            ];
+            if (notValid.includes(i)) continue;
+
+            if (
+                rowOfThree.every(
+                    (index) =>
+                        squares[index].style.backgroundImage === decidedColor &&
+                        !isBlank
+                )
+            ) {
+                score += 3;
+                scoreDisplay.innerHTML = score;
+                rowOfThree.forEach((index) => {
+                    squares[index].style.backgroundImage = "";
+                });
+            }
+        }
+    }
+    checkRowForThree();
+
+    function checkColumnForThree() {
+        for (i = 0; i < 47; i++) {
+            let columnOfThree = [i, i + width, i + width * 2];
+            let decidedColor = squares[i].style.backgroundImage;
+            const isBlank = squares[i].style.backgroundImage === "";
+
+            if (
+                columnOfThree.every(
+                    (index) =>
+                        squares[index].style.backgroundImage === decidedColor &&
+                        !isBlank
+                )
+            ) {
+                score += 3;
+                scoreDisplay.innerHTML = score;
+                columnOfThree.forEach((index) => {
+                    squares[index].style.backgroundImage = "";
+                });
+            }
+        }
+    }
+    checkColumnForThree();
+
+    window.setInterval(function () {
+        checkRowForFour();
+        checkColumnForFour();
+        checkRowForThree();
+        checkColumnForThree();
+        moveIntoSquareBelow();
+    }, 100);
+}
+  </script>
+</html>
