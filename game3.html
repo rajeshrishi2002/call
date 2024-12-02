@@ -1644,6 +1644,8 @@ document.addEventListener(
       overText.classList.add("over-text--display");
       overText.classList.add("over-text--tutorial");
       overText.addEventListener("click", removeTutorial);
+      overText.innerHTML =
+        "";
     }
     // Init
     buildLevel();
