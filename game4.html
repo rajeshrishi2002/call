@@ -6,67 +6,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Particle Shooter</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-image: url('b1.jpeg');
-            background-size: cover;
-            background-position: center;
-            min-height: 100vh;
-            position: relative;
-            overflow: hidden;
-            font-family: 'Pacifico', cursive;
-        }
-        .blur-background {
-            filter: blur(2px);
-        }
-        #footerImage {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 1;
-            width: 60px;
-        }
-    </style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-image: url('b1.jpeg');
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Pacifico', cursive;
+      }
 
+      #score-container {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #fff;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        z-index: 10;
+        font-family: 'Pacifico', cursive;
+        filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));
+      }
+
+      #start-modal {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        inset: 0;
+      }
+      #start-modal .bg-white {
+        max-width: 400px;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      }
+      #start-btn {
+        background: linear-gradient(135deg, #ffffff 0%, #ffbad7 3%, #e50797 80%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 50px;
+        margin-bottom: 50px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: background-color 0.3s ease;
+      }
+      #start-btn:hover {
+        background-color: #f50057;
+      }
+
+      #footerImage {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 1;
+      }
+
+      /* Icon */
+      #icon {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin-top: -25px;
+        width: 120px;
+        filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));
+      }
+    </style>
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js" crossorigin="anonymous"></script>
   </head>
   <body>
-    <div class="fixed text-white text-sm ml-2 mt-1 select-none">
-      <span>Score: </span><span id="score">0</span>
+    <!-- Score container: Hasini & Nee -->
+    <div id="score-container">
+      <div id="hasini-score">Hasini: 13000</div>
+      <div id="nee-score">Nee: 0</div>
     </div>
 
-    <div id="start-modal" class="fixed inset-0 flex items-center justify-center">
-      <div class="bg-white max-w-md w-full p-6 text-center">
-        <h1 id="start-score" class="text-4xl font-bold leading-none">0</h1>
-        <p class="text-sm text-gray-700 mb-4">Points</p>
-        <div>
-          <button id="start-btn" class="bg-blue-500 text-white w-full py-3 rounded-full text-sm">Start Game</button>
-        </div>
+    <!-- Start modal with "Aaramikalama" button -->
+    <div id="start-modal" style="font-family: 'Pacifico', cursive; color: #ffffff; filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));">
+      <div class="text-center">
+        <button id="start-btn">Aaramikalama</button>
       </div>
     </div>
 
     <canvas></canvas>
+
+    <!-- Icon in top left corner -->
+    <img id="icon" src="icon.png" alt="Icon" style="position: absolute; top: 0; left: 0; margin-top: -25px; width: 120px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+
+    <!-- Footer Image -->
+    <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1)); width: 60px;">
+    <!-- Audio elements -->
+    <audio id="shoot-sound" src="shoot.mp3" preload="auto"></audio>
+    <audio id="game-over-sound" src="game-over.mp3" preload="auto"></audio>
+    <audio id="seri-vidu-sound" src="seri-vidu.mp3" preload="auto"></audio>
+    <audio id="thotute-irukiye-sound" src="thotute-irukiye.mp3" preload="auto"></audio>
+    <audio id="nee-thaan-win-sound" src="nee-thaan-win.mp3" preload="auto"></audio>
 
     <script>
       'use strict';
 
       const canvas = document.querySelector('canvas');
       const c = canvas.getContext('2d');
-
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      // Load player image
       const playerImage = new Image();
-      playerImage.src = 'pointp.png'; // Path to your player image
+      playerImage.src = 'pointp.png';
 
-      // Ensure image is loaded before game starts
-      playerImage.onload = () => {
-        console.log("Player image loaded!");
-      }
+      const shootSound = document.querySelector('#shoot-sound');
+      const gameOverSound = document.querySelector('#game-over-sound');
+      const lossSound = document.querySelector('#loss-sound');
+      const seriViduSound = document.querySelector('#seri-vidu-sound');
+      const thotuteIrukiyeSound = document.querySelector('#thotute-irukiye-sound');
+      const neeThaanWinSound = document.querySelector('#nee-thaan-win-sound');
 
       class Drawable {
         constructor(x, y, radius, color) {
@@ -90,13 +149,10 @@
         constructor(x, y, radius, color) {
           super(x, y, radius, color);
         }
-
         draw() {
           if (playerImage.complete) {
-            // Draw image once it's fully loaded
             c.drawImage(playerImage, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
           } else {
-            // Draw circle if image is not loaded yet (fallback)
             c.beginPath();
             c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
             c.fillStyle = this.color;
@@ -120,8 +176,8 @@
 
         update() {
           this.draw();
-          this.x = this.x + this.velocity.x;
-          this.y = this.y + this.velocity.y;
+          this.x += this.velocity.x;
+          this.y += this.velocity.y;
         }
       }
 
@@ -139,8 +195,8 @@
 
         update() {
           this.draw();
-          this.x = this.x + this.velocity.x;
-          this.y = this.y + this.velocity.y;
+          this.x += this.velocity.x;
+          this.y += this.velocity.y;
         }
       }
 
@@ -166,16 +222,16 @@
           this.draw();
           this.velocity.x *= Particle.FRICTION;
           this.velocity.y *= Particle.FRICTION;
-          this.x = this.x + this.velocity.x;
-          this.y = this.y + this.velocity.y;
+          this.x += this.velocity.x;
+          this.y += this.velocity.y;
           this.alpha -= 0.01;
         }
       }
 
-      const scoreElement = document.querySelector('#score');
+      const hasiniScoreElement = document.querySelector('#hasini-score');
+      const neeScoreElement = document.querySelector('#nee-score');
       const startModalElement = document.querySelector('#start-modal');
       const startButtonElement = document.querySelector('#start-btn');
-      const startScoreElement = document.querySelector('#start-score');
 
       let playing = false;
       let score;
@@ -183,16 +239,19 @@
       let projectiles;
       let enemies;
       let particles;
+      let neeScore = 0;
+      const hasiniScore = 13000;
+      let lossCount = 0;
 
       function init() {
-        player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white'); // Increased radius for image size
+        player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white');
         projectiles = [];
         enemies = [];
         particles = [];
         score = 0;
-        scoreElement.innerHTML = score;
-        startScoreElement.innerHTML = score;
-
+        neeScore = 0;
+        hasiniScoreElement.innerHTML = `Hasini: ${hasiniScore}`;
+        neeScoreElement.innerHTML = `Nee: ${neeScore}`;
         playing = true;
       }
 
@@ -202,9 +261,7 @@
             window.clearInterval(enemiesId);
           } else {
             const radius = Math.random() * (30 - 4) + 4;
-
-            let x;
-            let y;
+            let x, y;
 
             if (Math.random() < 0.5) {
               x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
@@ -266,7 +323,18 @@
             playing = false;
             window.cancelAnimationFrame(animationId);
             showStartModal(true);
-            startScoreElement.innerHTML = score;
+
+            if (neeScore < hasiniScore) {
+              lossSound.play();
+              seriViduSound.play();
+              alert("Seri vidu! Thotute irukiye da");
+              lossCount++;
+
+              if (lossCount > 2) {
+                thotuteIrukiyeSound.play();
+              }
+            }
+            gameOverSound.play();
           }
 
           projectiles.forEach((projectile, projectileIndex) => {
@@ -290,7 +358,8 @@
 
               if (enemy.radius - 10 > 5) {
                 score += 100;
-                scoreElement.innerHTML = score;
+                neeScore += 100;
+                neeScoreElement.innerHTML = `Nee: ${neeScore}`;
 
                 gsap.to(enemy, {
                   radius: enemy.radius - 10,
@@ -301,7 +370,8 @@
                 }, 0);
               } else {
                 score += 250;
-                scoreElement.innerHTML = score;
+                neeScore += 250;
+                neeScoreElement.innerHTML = `Nee: ${neeScore}`;
 
                 setTimeout(() => {
                   enemies.splice(enemyIndex, 1);
@@ -315,21 +385,25 @@
 
       function showStartModal(toggle) {
         startModalElement.style.display = toggle ? 'flex' : 'none';
+        if (!toggle && neeScore > hasiniScore) {
+          neeThaanWinSound.play();
+          alert("Nee thaan da win uh!");
+        }
       }
 
       startButtonElement.addEventListener('click', (_) => {
-        init();
-        showStartModal(false);
-        animate();
-        spawnEnemies();
+        if (!playing) {
+          init();
+          showStartModal(false);
+          startButtonElement.innerHTML = 'Start Again';
+          animate();
+          spawnEnemies();
+        }
       });
 
       window.addEventListener('click', ({ clientX, clientY }) => {
         if (playing) {
-          const angle = Math.atan2(
-            clientY - canvas.height / 2,
-            clientX - canvas.width / 2
-          );
+          const angle = Math.atan2(clientY - canvas.height / 2, clientX - canvas.width / 2);
           const velocity = {
             x: Math.cos(angle) * 5,
             y: Math.sin(angle) * 5,
@@ -338,6 +412,8 @@
           projectiles.push(
             new Projectile(canvas.width / 2, canvas.height / 2, 5, 'white', velocity)
           );
+
+          shootSound.play();
         }
       });
     </script>
