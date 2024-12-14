@@ -1,380 +1,468 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Pong</title>
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-    <!-- Link to external CSS -->
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <!-- Script -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <title>Solluu</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-image: url('b1.jpeg');
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Pacifico', cursive;
+      }
+
+      #score-container {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #fff;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        z-index: 10;
+        font-family: 'Pacifico', cursive;
+        filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));
+      }
+
+      #start-modal {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        inset: 0;
+      }
+      #start-modal .bg-white {
+        max-width: 400px;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      }
+      #start-btn {
+        background: linear-gradient(135deg, #ffffff 0%, #ffbad7 3%, #e50797 80%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 50px;
+        border: none;
+        cursor: none;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        transition: background-color 0.3s ease;
+      }
+      #start-btn:hover {
+        background-color: #f50057;
+      }
+
+      #footerImage {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 1;
+      }
+
+      /* Icon */
+      #icon {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin-top: -25px;
+        width: 120px;
+        filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));
+      }
+    </style>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <!-- Score container: Hasini & Nee -->
+    <div id="score-container">
+      <div id="hasini-score">Hasini: 50000</div>
+      <div id="nee-score">Nee: 0</div>
+    </div>
+<!-- Add this above the start button in the HTML -->
+
+    <!-- Start modal with "Aaramikalama" button -->
+    <div id="start-modal" style="font-family: 'Pacifico', cursive; color: #ffffff; filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1)); display: flex;">
+      <div class="text-center">
+        <div id="text-above-start-btn" style="color: white; font-size: 1.5rem; margin-bottom: 15px; display: none; filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1));"></div>
+
+        <button id="start-btn">Aaramikalama</button>
+      </div>
+    </div>
+
+    <canvas></canvas>
+<a href="game5.html">
+    <img id="icon" src="icon.png" alt="Icon" style="position: absolute; top: 0; left: 0; margin-top: -25px; width: 120px; filter: drop-shadow(0 0 5px rgba(255, 148, 193, 0.945));">
+</a>
+    <!-- Footer Image -->
+    <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1)); width: 60px;">
+    <!-- Audio elements -->
+    <audio id="shoot-sound" src="shoot.mp3" preload="auto"></audio>
+<!-- Add these new audio elements -->
+<audio id="seri-vidu-da-sound" src="thotute.mp3" preload="auto"></audio>
+<audio id="thotute-irukiyeda-sound" src="thotute-irukiyeda.mp3" preload="auto"></audio>
+
+
     <script>
-        // Canvas
-const { body } = document;
-const canvas = document.createElement('canvas');
-const context = canvas.getContext('2d');
-const width = 500;
-const height = 600;
-const screenWidth = window.screen.width;
-const canvasPosition = screenWidth / 2 - width / 2;
-const isMobile = window.matchMedia('(max-width: 600px)');
-const gameOverEl = document.createElement('div');
+   'use strict';
 
-// Paddle
-const paddleHeight = 10;
-const paddleWidth = 50;
-const paddleDiff = 25;
-let paddleBottomX = 225;
-let paddleTopX = 225;
-let playerMoved = false;
-let paddleContact = false;
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-// Ball
-let ballX = 250;
-let ballY = 300;
-const ballRadius = 5;
+const playerImage = new Image();
+playerImage.src = 'pointp.png';
 
-// Speed
-let speedY;
-let speedX;
-let trajectoryX;
-let computerSpeed;
+const shootSound = document.querySelector('#shoot-sound');
 
-// Change Mobile Settings
-if (isMobile.matches) {
-  speedY = -2;
-  speedX = speedY;
-  computerSpeed = 4;
-} else {
-  speedY = -1;
-  speedX = speedY;
-  computerSpeed = 3;
+
+class Drawable {
+  constructor(x, y, radius, color) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+  }
+  draw() {}
 }
 
-// Score
-let playerScore = 0;
-let computerScore = 0;
-const winningScore = 7;
-let isGameOver = true;
-let isNewGame = true;
-// Modify the event listener to work with touch events on mobile devices
-let lastTouchX = 0;
-
-canvas.addEventListener('touchstart', (e) => {
-  // Prevent default touch behavior (scrolling)
-  e.preventDefault();
-  lastTouchX = e.touches[0].clientX;
-});
-
-canvas.addEventListener('touchmove', (e) => {
-  // Prevent default touch behavior (scrolling)
-  e.preventDefault();
-
-  let touchX = e.touches[0].clientX;
-  let deltaX = touchX - lastTouchX;
-
-  // Update paddle position based on swipe distance
-  paddleBottomX += deltaX;
-
-  // Limit paddle movement within canvas bounds
-  if (paddleBottomX < 0) {
-    paddleBottomX = 0;
+class Movable extends Drawable {
+  constructor(x, y, radius, color, velocity) {
+    super(x, y, radius, color);
+    this.velocity = velocity;
   }
-  if (paddleBottomX > width - paddleWidth) {
-    paddleBottomX = width - paddleWidth;
-  }
-
-  // Update the last touch position for smooth movement
-  lastTouchX = touchX;
-
-  // Hide cursor during touch
-  canvas.style.cursor = 'none';
-});
-
-// Render Everything on Canvas
-function renderCanvas() {
-  // Canvas Background
-  context.fillStyle = 'black';
-  context.fillRect(0, 0, width, height);
-
-  // Paddle Color
-  context.fillStyle = 'white';
-
-  // Player Paddle (Bottom)
-  context.fillRect(paddleBottomX, height - 20, paddleWidth, paddleHeight);
-
-  // Computer Paddle (Top)
-  context.fillRect(paddleTopX, 10, paddleWidth, paddleHeight);
-
-  // Dashed Center Line
-  context.beginPath();
-  context.setLineDash([4]);
-  context.moveTo(0, 300);
-  context.lineTo(500, 300);
-  context.strokeStyle = 'grey';
-  context.stroke();
-
-  // Ball
-  context.beginPath();
-  context.arc(ballX, ballY, ballRadius, 2 * Math.PI, false);
-  context.fillStyle = 'white';
-  context.fill();
-
-  // Score
-  context.font = '32px Courier New';
-  context.fillText(computerScore, 20, canvas.height / 2 - 30);
-  context.fillText(playerScore, 20, canvas.height / 2 + 50);
+  update() {}
 }
 
-// Create Canvas Element
-function createCanvas() {
-  canvas.width = width;
-  canvas.height = height;
-  body.appendChild(canvas);
-  renderCanvas();
-}
-
-// Remove this
-createCanvas();
-
-// Reset Ball to Center
-function ballReset() {
-  ballX = width / 2;
-  ballY = height / 2;
-  speedY = -3;
-  paddleContact = false;
-}
-
-// Adjust Ball Movement
-function ballMove() {
-  // Vertical Speed
-  ballY += -speedY;
-  // Horizontal Speed
-  if (playerMoved && paddleContact) {
-    ballX += speedX;
+class Player extends Drawable {
+  constructor(x, y, radius, color) {
+    super(x, y, radius, color);
   }
-}
-
-// Determine What Ball Bounces Off, Score Points, Reset Ball
-function ballBoundaries() {
-  // Bounce off Left Wall
-  if (ballX < 0 && speedX < 0) {
-    speedX = -speedX;
-  }
-  // Bounce off Right Wall
-  if (ballX > width && speedX > 0) {
-    speedX = -speedX;
-  }
-  // Bounce off player paddle (bottom)
-  if (ballY > height - paddleDiff) {
-    if (ballX > paddleBottomX && ballX < paddleBottomX + paddleWidth) {
-      paddleContact = true;
-      // Add Speed on Hit
-      if (playerMoved) {
-        speedY -= 1;
-        // Max Speed
-        if (speedY < -5) {
-          speedY = -5;
-          computerSpeed = 6;
-        }
-      }
-      speedY = -speedY;
-      trajectoryX = ballX - (paddleBottomX + paddleDiff);
-      speedX = trajectoryX * 0.3;
-    } else if (ballY > height) {
-      // Reset Ball, add to Computer Score
-      ballReset();
-      computerScore++;
-    }
-  }
-  // Bounce off computer paddle (top)
-  if (ballY < paddleDiff) {
-    if (ballX > paddleTopX && ballX < paddleTopX + paddleWidth) {
-      // Add Speed on Hit
-      if (playerMoved) {
-        speedY += 1;
-        // Max Speed
-        if (speedY > 5) {
-          speedY = 5;
-        }
-      }
-      speedY = -speedY;
-    } else if (ballY < 0) {
-      // Reset Ball, add to Player Score
-      ballReset();
-      playerScore++;
-    }
-  }
-}
-
-// Computer Movement
-function computerAI() {
-  if (playerMoved) {
-    if (paddleTopX + paddleDiff < ballX) {
-      paddleTopX += computerSpeed;
+  draw() {
+    if (playerImage.complete) {
+      c.drawImage(playerImage, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
     } else {
-      paddleTopX -= computerSpeed;
+      c.beginPath();
+      c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+      c.fillStyle = this.color;
+      c.fill();
     }
   }
 }
 
-function showGameOverEl(winner) {
-  // Hide Canvas
-  canvas.hidden = true;
-  // Container
-  gameOverEl.textContent = 'GAME OVER';
-  gameOverEl.classList.add('game-over-container');
-  // Title
-  const title = document.createElement('h1');
-  title.textContent = `${winner} Wins!`;
-  // Button
-  const playAgainBtn = document.createElement('button');
-  playAgainBtn.setAttribute('onclick', 'startGame()');
-  playAgainBtn.textContent = 'Play Again';
-  // Append
-  gameOverEl.append(title, playAgainBtn);
-  body.appendChild(gameOverEl);  
-}
+class Projectile extends Movable {
+  constructor(x, y, radius, color, velocity) {
+    super(x, y, radius, color);
+    this.velocity = velocity;
+  }
 
-// Check If One Player Has Winning Score, If They Do, End Game
-function gameOver() {
-  if (playerScore === winningScore || computerScore === winningScore) {
-    isGameOver = true;
-    // Set Winner
-    let winner = playerScore === winningScore ? 'Player 1' : 'Computer';
-    showGameOverEl(winner);
+  draw() {
+    c.beginPath();
+    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    c.fillStyle = this.color;
+    c.fill();
+  }
+
+  update() {
+    this.draw();
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
   }
 }
 
-// Called Every Frame
+class Enemy extends Movable {
+  constructor(x, y, radius, color, velocity) {
+    super(x, y, radius, color, velocity);
+  }
+
+  draw() {
+    c.beginPath();
+    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    c.fillStyle = this.color;
+    c.fill();
+  }
+
+  update() {
+    this.draw();
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
+  }
+}
+
+class Particle extends Movable {
+  static FRICTION = 0.99;
+
+  constructor(x, y, radius, color, velocity) {
+    super(x, y, radius, color, velocity);
+    this.alpha = 1;
+  }
+
+  draw() {
+    c.save();
+    c.globalAlpha = this.alpha;
+    c.beginPath();
+    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    c.fillStyle = this.color;
+    c.fill();
+    c.restore();
+  }
+
+  update() {
+    this.draw();
+    this.velocity.x *= Particle.FRICTION;
+    this.velocity.y *= Particle.FRICTION;
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
+    this.alpha -= 0.01;
+  }
+}
+
+const hasiniScoreElement = document.querySelector('#hasini-score');
+const neeScoreElement = document.querySelector('#nee-score');
+const startModalElement = document.querySelector('#start-modal');
+const startButtonElement = document.querySelector('#start-btn');
+const seriViduDaSound = document.querySelector('#seri-vidu-da-sound');
+const thotuteIrukiyedaSound = document.querySelector('#thotute-irukiyeda-sound');
+const textAboveStartButton = document.querySelector('#text-above-start-btn');
+
+let playing = false;
+let score;
+let player;
+let projectiles;
+let enemies;
+let particles;
+let neeScore = 0;
+const hasiniScore = 50000;
+let firstLoss = true;
+
+let lossCount = 0;
+
+function init() {
+  player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white');
+  projectiles = [];
+  enemies = [];
+  particles = [];
+  score = 0;
+  neeScore = 0;
+  hasiniScoreElement.innerHTML = `Hasini: ${hasiniScore}`;
+  neeScoreElement.innerHTML = `Nee: ${neeScore}`;
+  playing = true;
+}
+
+function spawnEnemies() {
+  const enemiesId = setInterval(() => {
+    if (!playing) {
+      window.clearInterval(enemiesId);
+    } else {
+      const radius = Math.random() * (30 - 4) + 4;
+      let x, y;
+
+      if (Math.random() < 0.5) {
+        x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
+        y = Math.random() * canvas.height;
+      } else {
+        x = Math.random() * canvas.width;
+        y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
+      }
+
+      const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
+      const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
+      const velocity = {
+        x: Math.cos(angle),
+        y: Math.sin(angle),
+      };
+
+      enemies.push(new Enemy(x, y, radius, color, velocity));
+    }
+  }, 1000);
+}
+
 function animate() {
-  renderCanvas();
-  ballMove();
-  ballBoundaries();
-  computerAI();
-  gameOver();
-  if (!isGameOver) {
-    window.requestAnimationFrame(animate);
-  }
-}
+  const animationId = window.requestAnimationFrame(animate);
 
-// Start Game, Reset Everything
-function startGame() {
-  if (isGameOver && !isNewGame) {
-    body.removeChild(gameOverEl);
-    canvas.hidden = false;
-  }
-  isGameOver = false;
-  isNewGame = false;
-  playerScore = 0;
-  computerScore = 0;
-  ballReset();
-  createCanvas();
-  animate();
-  canvas.addEventListener('mousemove', (e) => {
-    playerMoved = true;
-    // Compensate for canvas being centered
-    paddleBottomX = e.clientX - canvasPosition - paddleDiff;
-    if (paddleBottomX < paddleDiff) {
-      paddleBottomX = 0;
+  c.fillStyle = 'rgba(0, 0, 0, 0.1)';
+  c.fillRect(0, 0, canvas.width, canvas.height);
+
+  player.draw();
+
+  particles.forEach((particle, particleIndex) => {
+    if (particle.alpha <= 0) {
+      particles.splice(particleIndex, 1);
+    } else {
+      particle.update();
     }
-    if (paddleBottomX > width - paddleWidth) {
-      paddleBottomX = width - paddleWidth;
-    }
-    // Hide Cursor
-    canvas.style.cursor = 'none';
   });
+
+  projectiles.forEach((projectile, projectileIndex) => {
+    projectile.update();
+
+    if (
+      projectile.x + projectile.radius < 0 ||
+      projectile.x - projectile.radius > canvas.width ||
+      projectile.y + projectile.radius < 0 ||
+      projectile.y - projectile.radius > canvas.height
+    ) {
+      setTimeout(() => {
+        projectiles.splice(projectileIndex, 1);
+      }, 0);
+    }
+  });
+
+  enemies.forEach((enemy, enemyIndex) => {
+    enemy.update();
+
+    const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+
+    if (dist - enemy.radius - player.radius < 1) {
+      playing = false;
+      window.cancelAnimationFrame(animationId);
+      showStartModal(true);
+
+      if (neeScore < hasiniScore) {
+        lossSound.play();
+        seriViduSound.play();
+        alert("Seri vidu! Thotute irukiye da");
+        lossCount++;
+
+        if (lossCount > 2) {
+          thotuteIrukiyeSound.play();
+        }
+      }
+      gameOverSound.play();
+    }
+
+    projectiles.forEach((projectile, projectileIndex) => {
+      const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
+
+      if (dist - enemy.radius - projectile.radius < 1) {
+        for (let i = 0; i < enemy.radius * 2; i++) {
+          particles.push(
+            new Particle(
+              projectile.x,
+              projectile.y,
+              Math.random() * 2,
+              enemy.color,
+              {
+                x: (Math.random() - 0.5) * (Math.random() * 8),
+                y: (Math.random() - 0.5) * (Math.random() * 8),
+              }
+            )
+          );
+        }
+
+        if (enemy.radius - 10 > 5) {
+          score += 100;
+          neeScore += 100;
+          neeScoreElement.innerHTML = `Nee: ${neeScore}`;
+          gsap.to(enemy, {
+            radius: enemy.radius - 10,
+          });
+
+          setTimeout(() => {
+            projectiles.splice(projectileIndex, 1);
+          }, 0);
+        } else {
+          score += 250;
+          neeScore += 250;
+          neeScoreElement.innerHTML = `Nee: ${neeScore}`;
+
+          setTimeout(() => {
+            enemies.splice(enemyIndex, 1);
+            projectiles.splice(projectileIndex, 1);
+          }, 0);
+        }
+      }
+    });
+  });
+
+  // Check if player has won
+  if (neeScore > 50000 && playing) {
+    playing = false;
+    window.cancelAnimationFrame(animationId);
+    neeThaanWinSound.play();
+    alert("Nee thaan da win uh!"); // Display the message when player wins
+    showStartModal(true);
+  }
 }
 
-// On Load
-startGame();
+function showStartModal(isGameOver) {
+  if (isGameOver) {
+    // Show the button and the text above it
+    startButtonElement.style.display = 'block'; // Show the "Start Again" button
+    textAboveStartButton.style.display = 'block'; // Show the text above the button
+
+    // Check if the nee score is less than 50000
+    if (neeScore < 50000) {
+      if (firstLoss) {
+        seriViduDaSound.play(); // Play the unique sound
+        firstLoss = false; // Ensure this only displays once
+      } else {
+        textAboveStartButton.innerHTML = "Thotute irukiyeda"; // Display "thotute irukiyeda" for the second time
+        thotuteIrukiyedaSound.play(); // Play the second unique sound
+      }
+    } else {
+      textAboveStartButton.style.display = 'none'; // Hide text if the condition is not met
+    }
+  } else {
+    // Hide the button and text when the game is not over
+    startButtonElement.style.display = 'none';
+    textAboveStartButton.style.display = 'none';
+  }
+}
+
+startButtonElement.addEventListener('click', (_) => {
+  if (!playing) {
+    init();
+    showStartModal(false);
+    firstLoss = true; // Reset the first loss flag
+    textAboveStartButton.style.display = 'none'; // Hide text above the button when restarting
+    startButtonElement.innerHTML = 'Start Again';
+    animate();
+    spawnEnemies();
+  }
+});
+
+function init() {
+  player = new Player(canvas.width / 2, canvas.height / 2, 30, 'white');
+  projectiles = [];
+  enemies = [];
+  particles = [];
+  score = 0;
+  neeScore = 0;
+  hasiniScoreElement.innerHTML = `Hasini: ${hasiniScore}`;
+  neeScoreElement.innerHTML = `Nee: ${neeScore}`;
+  playing = true;
+}
+
+window.addEventListener('click', ({ clientX, clientY }) => {
+  if (playing) {
+    const angle = Math.atan2(clientY - canvas.height / 2, clientX - canvas.width / 2);
+    const velocity = {
+      x: Math.cos(angle) * 5,
+      y: Math.sin(angle) * 5,
+    };
+
+    projectiles.push(
+      new Projectile(canvas.width / 2, canvas.height / 2, 5, 'white', velocity)
+    );
+
+    // Ensuring that the sound plays quickly without any delay and overlays
+    shootSound.currentTime = 0; // Reset the sound to the beginning
+    shootSound.play(); // Play sound immediately
+  }
+});
+
 
     </script>
-    <style>
-        body {
-  margin: 0;
-  background-color: rgb(39, 39, 39);
-  display: flex;
-  justify-content: center;
-  font-family: "Courier New", Courier, monospace;
-}
-
-canvas {
-  margin-top: 25px;
-  z-index: 10;
-}
-
-.game-over-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 700px;
-  background-color: rgb(56, 56, 56);
-  margin-top: -4px;
-  z-index: 11;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: whitesmoke;
-}
-
-button {
-  cursor: pointer;
-  color: rgb(0, 0, 0);
-  background-color: rgb(195, 195, 195);
-  border: none;
-  height: 50px;
-  width: 200px;
-  border-radius: 5px;
-  font-size: 20px;
-  font-family: "Courier New", Courier, monospace;
-}
-
-button:hover {
-  filter: brightness(80%);
-}
-
-button:active {
-  transform: scale(0.95);
-}
-
-button:focus {
-  outline: none;
-}
-
-/* Montior and Larger */
-@media screen and (min-width: 1800px) {
-  canvas {
-    margin-top: 100px;
-  }
-
-  .game-over-container {
-    margin-top: -19px;
-  }
-}
-
-/* Large Smartphone (Vertical) */
-@media screen and (max-width: 500px) {
-  canvas {
-    width: 100%;
-    height: 700px;
-    margin-top: 50px;
-  }
-
-  .game-over-container {
-    width: 100%;
-    height: 700px;
-  }
-}
-
-    </style>
-</body>
+  </body>
 </html>
