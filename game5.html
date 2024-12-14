@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>stick</title>
-    <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Link to external CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <img id="icon" src="icon.png" alt="Icon" style="position: absolute; top: 0; left: 0; margin-top: -25px; width: 120px; filter: drop-shadow(0 0 5px rgba(255, 212, 228, 0.945));">
-
     <div id="score"></div>
     <canvas id="game" width="375" height="375"></canvas>
     <div id="introduction">Hold to Stretch the Stick and Launch it to the Next Block</div>
@@ -29,20 +26,17 @@ body {
   height: 100%;
   margin: 0;
 }
-
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   cursor: pointer;
   
 }
-
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
 }
-
 #score {
   position: absolute;
   top: 15px;
@@ -53,7 +47,6 @@ body {
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.945));
 
 }
-
 #introduction {
   width: 200px;
   height: 150px;
@@ -68,7 +61,6 @@ body {
   cursor: none;
 
 }
-
 #restart {
   position: absolute;
   padding: 15px 25px;
@@ -84,7 +76,6 @@ body {
   font-family: 'Dancing Script', cursive;
 
 }
-
 #perfect {
   width: 200px;
   height: 150px;
@@ -102,14 +93,10 @@ body {
 * {
   outline: none; /* Disable the focus outline for all elements */
   -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
-
 }
-
 button:focus {
   outline: none;
 }
-
-
   </style>
   <script>
 Array.prototype.last = function () {
@@ -196,8 +183,6 @@ function generateTree() {
     furthestX +
     minimumGap +
     Math.floor(Math.random() * (maximumGap - minimumGap));
-  
-  // Use shades of pink for tree colors
   const treeColors = ["#FFB6C1", "#D36B83", "#FAD0C3"];
   const color = treeColors[Math.floor(Math.random() * 3)];
   trees.push({ x, color });
@@ -265,6 +250,7 @@ window.addEventListener("resize", function (event) {
 });
 
 window.requestAnimationFrame(animate);
+let winAudio = new Audio('vettri.m4a'); // Replace with the actual audio file path
 
 function animate(timestamp) {
   if (!lastTimestamp) {
@@ -272,6 +258,25 @@ function animate(timestamp) {
     window.requestAnimationFrame(animate);
     return;
   }
+
+  if (score >= 20) {
+    phase = "waiting";  // Stop the game
+    introductionElement.style.opacity = 1;
+    introductionElement.innerText = "Nee win da🤩";  // Show the win message
+    
+    // Make the win message larger and centered
+    introductionElement.style.fontSize = '40px';  // Change to a large font size
+    introductionElement.style.fontWeight = 'bold';
+    introductionElement.style.textAlign = 'center';
+    introductionElement.style.color = 'white';  // Optional: Change text color to make it stand out
+    
+    // Play the win audio
+    winAudio.play();
+
+    platforms = generateLimitedPlatforms();  // Generate exactly 13 platforms
+    return;
+  }
+
   switch (phase) {
     case "waiting":
       return; // Stop the loop
@@ -353,6 +358,16 @@ function animate(timestamp) {
 
   lastTimestamp = timestamp;
 }
+
+function generateLimitedPlatforms() {
+  const limitedPlatforms = [];
+  for (let i = 0; i < 20; i++) {
+    generatePlatform(); // Reuse your generatePlatform logic to create 13 platforms
+    limitedPlatforms.push(platforms[i]); // Store only the first 13 platforms
+  }
+  return limitedPlatforms;
+}
+
 function thePlatformTheStickHits() {
   if (sticks.last().rotation != 90)
     throw Error(`Stick is ${sticks.last().rotation}°`);
@@ -502,7 +517,6 @@ function drawHill(baseHeight, amplitude, stretch, color) {
   ctx.fillStyle = color;  // This color is set as the pink color
   ctx.fill();
 }
-
 function drawTree(x, color) {
   ctx.save();
   ctx.translate(
@@ -521,9 +535,7 @@ function drawTree(x, color) {
     treeTrunkWidth,
     treeTrunkHeight
   );
-  
-  // Modify the color here for tree crown to pink or dark pink
-  ctx.beginPath();
+    ctx.beginPath();
   ctx.moveTo(-treeCrownWidth / 2, -treeTrunkHeight);
   ctx.lineTo(0, -(treeTrunkHeight + treeCrownHeight));
   ctx.lineTo(treeCrownWidth / 2, -treeTrunkHeight);
@@ -531,7 +543,6 @@ function drawTree(x, color) {
   ctx.fill();
   ctx.restore();
 }
-
 function getHillY(windowX, baseHeight, amplitude, stretch) {
   const sineBaseY = window.innerHeight - baseHeight;
   return (
