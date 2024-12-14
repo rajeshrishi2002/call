@@ -17,8 +17,11 @@
     <div id="score"></div>
     <canvas id="game" width="375" height="375"></canvas>
     <div id="introduction">Hold to Stretch the Stick and Launch it to the Next Block</div>
-    <div id="perfect">Double the Score</div>
+    <div id="perfect">+2</div>
     <button id="restart">Restart</button>
+    <img id="footerImage" src="rkr.png" alt="Footer Image" style="filter: drop-shadow(0 0 10px rgba(255, 148, 193, 1)); width: 60px;">
+    <button id="start-again">Start Again</button>
+
   </div>  
   <style>
     html,
@@ -33,6 +36,28 @@ body {
   user-select: none;
   
 }
+#start-again {
+  position: absolute;
+  padding: 15px 25px;
+  border-radius: 50px;
+  color: white;
+  background: linear-gradient(135deg, #ffb1d3 0%, #f73f9b 30%, #89003e 100%);
+  border: none;
+  font-weight: 700;
+  font-size: 1.2em;
+  display: none;  /* Hidden by default */
+  cursor: pointer;
+  filter: drop-shadow(0 0 10px rgba(248, 174, 205, 0.573));
+  font-family: 'Dancing Script', cursive;
+  user-select: none;
+  z-index: 9999;
+  transition: opacity 0.3s ease-in-out;
+}
+
+#start-again:hover {
+  background: linear-gradient(135deg, #f73f9b 0%, #ffb1d3 30%, #89003e 100%);
+}
+
 .container {
   display: flex;
   justify-content: center;
@@ -41,12 +66,13 @@ body {
 }
 #score {
   position: absolute;
-  top: 15px;
+  top: -8px;
   right: 20px;
-  font-size: 2em;
+  font-size: 2.7em;
   font-weight: 900;
   color: white;
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.945));
+  font-family: 'Pacifico', cursive;
 
 }
 #introduction {
@@ -84,12 +110,12 @@ body {
   position: absolute;
   font-weight: 800;
   color: white;
-  font-size: 1em;
+  font-size: 1.9em;
   text-align: center;
   transition: opacity 2s;
-  font-family: 'Dancing Script', cursive;
   opacity: 0;
   cursor: none;
+  font-family: 'Pacifico', cursive;
   filter: drop-shadow(0 0 10px rgba(248, 174, 205, 0.573));
 }
 * {
@@ -99,6 +125,13 @@ body {
 button:focus {
   outline: none;
 }
+#footerImage {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 1;
+      }
   </style>
   <script>
 Array.prototype.last = function () {
@@ -117,6 +150,8 @@ let platforms = [];
 let sticks = [];
 let trees = [];
 let score = 0;
+let gameOverAudio = new Audio('thotute.mp3'); // Add your own game over sound
+
 const canvasWidth = 375;
 const canvasHeight = 375;
 const platformHeight = 100;
@@ -253,6 +288,7 @@ window.addEventListener("resize", function (event) {
 
 window.requestAnimationFrame(animate);
 let winAudio = new Audio('vettri.m4a'); // Replace with the actual audio file path
+let isGameOver = false; // Add a flag to track the game over state
 
 function animate(timestamp) {
   if (!lastTimestamp) {
@@ -261,7 +297,7 @@ function animate(timestamp) {
     return;
   }
 
-  if (score >= 20) {
+  if (score >= 4) {
     phase = "waiting";  // Stop the game
     introductionElement.style.opacity = 1;
     introductionElement.innerText = "Nee win da🤩";  // Show the win message
@@ -273,9 +309,12 @@ function animate(timestamp) {
     introductionElement.style.color = 'white';  // Optional: Change text color to make it stand out
     introductionElement.style.userSelect = 'none'; // This prevents text selection
 
-    
     // Play the win audio
     winAudio.play();
+    // Show "Start Again" button after winning
+    document.getElementById("start-again").style.display = "block";
+    // Hide the restart button to avoid overlap
+    restartButton.style.display = "none";
 
     platforms = generateLimitedPlatforms();  // Generate exactly 13 platforms
     return;
@@ -349,6 +388,11 @@ function animate(timestamp) {
       const maxHeroY =
         platformHeight + 100 + (window.innerHeight - canvasHeight) / 2;
       if (heroY > maxHeroY) {
+        // If the game is over and the audio is not already playing, start the audio
+        if (!isGameOver) {
+          gameOverAudio.play();
+          isGameOver = true; // Set gameOver flag to true
+        }
         restartButton.style.display = "block";
         return;
       }
@@ -362,6 +406,29 @@ function animate(timestamp) {
 
   lastTimestamp = timestamp;
 }
+
+// Add an event listener to the "Restart" button to reset the game and stop the audio
+restartButton.addEventListener("click", function (event) {
+  event.preventDefault();
+  resetGame();
+  restartButton.style.display = "none";
+  isGameOver = false; // Reset the game over flag
+  gameOverAudio.pause(); // Pause the game-over audio
+  gameOverAudio.currentTime = 0; // Reset the audio to start from the beginning next time
+});
+
+
+// Add an event listener to the "Start Again" button
+document.getElementById("start-again").addEventListener("click", function () {
+  resetGame();
+  introductionElement.style.opacity = 1; // Show the introduction again
+  introductionElement.innerText = ""; // Reset the text
+  document.getElementById("start-again").style.display = "none"; // Hide the Start Again button
+  restartButton.style.display = "none"; // Hide the restart button as well
+  winAudio.pause(); // Pause the game-over audio
+  winAudio.currentTime = 0; // Reset the audio to start from the beginning next time
+  
+});
 
 function generateLimitedPlatforms() {
   const limitedPlatforms = [];
@@ -418,7 +485,7 @@ function drawPlatforms() {
       platformHeight + (window.innerHeight - canvasHeight) / 2
     );
     if (sticks.last().x < x) {
-      ctx.fillStyle = "red";
+      ctx.fillStyle = "#bd0055";
       ctx.fillRect(
         x + w / 2 - perfectAreaSize / 2,
         canvasHeight - platformHeight,
