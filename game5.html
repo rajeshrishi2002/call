@@ -25,10 +25,12 @@
 body {
   height: 100%;
   margin: 0;
+  user-select: none;
 }
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   cursor: pointer;
+  user-select: none;
   
 }
 .container {
@@ -269,6 +271,8 @@ function animate(timestamp) {
     introductionElement.style.fontWeight = 'bold';
     introductionElement.style.textAlign = 'center';
     introductionElement.style.color = 'white';  // Optional: Change text color to make it stand out
+    introductionElement.style.userSelect = 'none'; // This prevents text selection
+
     
     // Play the win audio
     winAudio.play();
