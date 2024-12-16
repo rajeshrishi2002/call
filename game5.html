@@ -13,7 +13,8 @@
 </head>
 <body>
   <div class="container">
-    <img id="icon" src="icon.png" alt="Icon" style="position: absolute; top: 0; left: 0; margin-top: -25px; width: 120px; filter: drop-shadow(0 0 5px rgba(255, 212, 228, 0.945));">
+    <a href="home.html">
+    <img id="icon" src="icon.png" alt="Icon" style="position: absolute; top: 0; left: 0; margin-top: -25px; width: 120px; filter: drop-shadow(0 0 5px rgba(255, 212, 228, 0.945));"></a>
     <div id="score"></div>
     <canvas id="game" width="375" height="375"></canvas>
     <div id="introduction">Hold to Stretch the Stick and Launch it to the Next Block</div>
@@ -151,6 +152,9 @@ let sticks = [];
 let trees = [];
 let score = 0;
 let gameOverAudio = new Audio('thotute.mp3'); // Add your own game over sound
+let heroMoveAudio = new Audio('oodu.mp3'); // Replace with the actual audio file path
+heroMoveAudio.loop = true; // Make the sound loop while moving
+let isHeroMoving = false; // Flag to track hero's movement
 
 const canvasWidth = 375;
 const canvasHeight = 375;
@@ -289,6 +293,7 @@ window.addEventListener("resize", function (event) {
 window.requestAnimationFrame(animate);
 let winAudio = new Audio('vettri.m4a'); // Replace with the actual audio file path
 let isGameOver = false; // Add a flag to track the game over state
+let movementAudio = new Audio('oodu.mp3'); // Replace with your movement sound file
 
 function animate(timestamp) {
   if (!lastTimestamp) {
@@ -318,6 +323,18 @@ function animate(timestamp) {
 
     platforms = generateLimitedPlatforms();  // Generate exactly 13 platforms
     return;
+  }
+  // Play audio when hero starts moving
+  if (phase === "walking" && !isHeroMoving) {
+    movementAudio.play();
+    isHeroMoving = true;  // Set the flag to indicate the hero is moving
+  }
+
+  // Stop the audio when the hero stops moving
+  if (phase !== "walking" && isHeroMoving) {
+    movementAudio.pause(); // Pause the audio
+    movementAudio.currentTime = 0; // Reset the audio to the start
+    isHeroMoving = false; // Reset the flag
   }
 
   switch (phase) {
@@ -406,6 +423,7 @@ function animate(timestamp) {
 
   lastTimestamp = timestamp;
 }
+
 
 // Add an event listener to the "Restart" button to reset the game and stop the audio
 restartButton.addEventListener("click", function (event) {
